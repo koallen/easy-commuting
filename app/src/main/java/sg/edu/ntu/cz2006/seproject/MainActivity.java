@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.addMarker(new MarkerOptions()
                 .position(new LatLng(1.3, 103.8))
                 .title("Marker"));
+        map.setMyLocationEnabled(true);
     }
 
     public void fabOnClickListener(View view) {
