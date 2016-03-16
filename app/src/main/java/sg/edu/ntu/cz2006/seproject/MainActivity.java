@@ -30,7 +30,6 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
-import com.pnikosis.materialishprogress.ProgressWheel;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -104,12 +103,7 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
 
             @Override
             public void onSearchAction() {
-                mRequestDialog.show();
                 presenter.fetchUVIndexData();
-//                Intent intent = new Intent(MainActivity.this.getBaseContext(), NavigationActivity.class);
-//                startActivity(intent);
-
-//                Log.d(TAG, "onSearchAction()");
             }
         });
 
@@ -223,5 +217,10 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    public void showLoading() {
+        mRequestDialog.show();
     }
 }

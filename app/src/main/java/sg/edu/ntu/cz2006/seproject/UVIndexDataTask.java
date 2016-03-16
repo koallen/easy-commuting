@@ -1,12 +1,17 @@
 package sg.edu.ntu.cz2006.seproject;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.IOException;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
+import retrofit2.Retrofit;
+import retrofit2.Call;
+import rx.Observable;
 
 /**
  * Created by koAllen on 16/3/16.
@@ -15,25 +20,22 @@ public class UVIndexDataTask extends AsyncTask<Void, Void, String> {
 
     // callback interface
     public interface UVIndexDataTaskListener {
-        public void onDataFetched(String apiData);
+        void onDataFetched(String apiData);
     }
 
     private UVIndexDataTaskListener listener;
-    private OkHttpClient client;
-    private static final String url = "http://www.nea.gov.sg/api/WebAPI/?dataset=uvi&keyref=781CF461BB6606AD62B1E1CAA87ECA612A87DF33A3ECDC11";
+//    private OkHttpClient client;
+    private static final String apiKey = "781CF461BB6606AD62B1E1CAA87ECA612A87DF33A3ECDC11";
+    private static final String dataset = "uvi";
 
     public UVIndexDataTask(UVIndexDataTaskListener listener) {
         this.listener = listener;
-        client = new OkHttpClient();
+//        client = new OkHttpClient();
     }
 
     @Override
     protected String doInBackground(Void... params) {
-        try {
-            return run(url);
-        } catch (IOException e) {
-            return "Request Failed";
-        }
+        return "lalala";
     }
 
     @Override
@@ -41,12 +43,12 @@ public class UVIndexDataTask extends AsyncTask<Void, Void, String> {
         listener.onDataFetched(apiData);
     }
 
-    private String run(String url) throws IOException {
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        Response response = client.newCall(request).execute();
-        return response.body().string();
-    }
+//    private String run(String url) throws IOException {
+//        Request request = new Request.Builder()
+//                .url(url)
+//                .build();
+//
+//        Response response = client.newCall(request).execute();
+//        return response.body().string();
+//    }
 }

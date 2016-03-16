@@ -11,4 +11,6 @@ public interface MainView extends MvpView {
     void locateUser(LatLng userLocation);
     // show API data
     void showData(String apiData);
+    // show progress dialog
+    void showLoading();
 }
