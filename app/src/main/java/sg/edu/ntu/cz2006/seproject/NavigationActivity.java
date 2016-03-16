@@ -7,32 +7,30 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class NavigationActivity extends AppCompatActivity {
+    @Bind(R.id.textview) TextView text;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
-        handleIntent(getIntent());
-    }
+        ButterKnife.bind(this);
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        handleIntent(intent);
-    }
-
-    private void handleIntent(Intent intent) {
-
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            //use the query to search your data somehow
-            TextView text = (TextView) findViewById(R.id.textview);
-            text.setText(query);
+        // get api data
+        Bundle extras = getIntent().getExtras();
+        String apiData = "No UV Index data";
+        if (extras != null) {
+            apiData = extras.getString("EXTRA_UVINDEX_DATA");
         }
+        // show it in TextView
+        text.setText(apiData);
+
     }
 
     public void buttonOnClickListener(View view) {
-        TextView text = (TextView) findViewById(R.id.textview);
         text.setText("I just clicked a button");
     }
 }

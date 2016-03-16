@@ -105,6 +105,7 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
             @Override
             public void onSearchAction() {
                 mRequestDialog.show();
+                presenter.fetchUVIndexData();
 //                Intent intent = new Intent(MainActivity.this.getBaseContext(), NavigationActivity.class);
 //                startActivity(intent);
 
@@ -188,6 +189,14 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
     @Override
     public void locateUser(LatLng userLocation) {
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
+    }
+
+    @Override
+    public void showData(String apiData) {
+        mRequestDialog.dismiss();
+        Intent nav = new Intent(MainActivity.this, NavigationActivity.class);
+        nav.putExtra("EXTRA_UVINDEX_DATA", apiData);
+        startActivity(nav);
     }
 
     @Override

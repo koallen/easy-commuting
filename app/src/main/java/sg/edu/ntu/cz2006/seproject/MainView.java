@@ -7,7 +7,8 @@ import com.hannesdorfmann.mosby.mvp.MvpView;
  * Created by koAllen on 15/3/16.
  */
 public interface MainView extends MvpView {
-
     // locate user
     void locateUser(LatLng userLocation);
+    // show API data
+    void showData(String apiData);
 }
