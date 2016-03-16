@@ -1,18 +1,24 @@
 package sg.edu.ntu.cz2006.seproject;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.MenuItem;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.google.android.gms.common.ConnectionResult;
@@ -24,6 +30,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
+import com.pnikosis.materialishprogress.ProgressWheel;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -34,6 +41,7 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
 
     private FloatingSearchView mSearchView;
     private GoogleApiClient mGoogleApiClient;
+    private MaterialDialog mRequestDialog;
     private Location mLastLocation;
     private GoogleMap mMap;
 
@@ -43,12 +51,24 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         ButterKnife.bind(this);
 
         MapFragment mapFragment =
                 (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        mRequestDialog = new MaterialDialog.Builder(MainActivity.this)
+                .content(R.string.please_wait)
+                .progress(true, 0)
+                .canceledOnTouchOutside(false)
+//                .cancelable(false)
+                .showListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface dialog) {
+                        Log.d("MainActivity", "onShow()");
+                    }
+                })
+                .build();
 
         mSearchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
 
@@ -84,8 +104,9 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
 
             @Override
             public void onSearchAction() {
-                Intent intent = new Intent(MainActivity.this.getBaseContext(), NavigationActivity.class);
-                startActivity(intent);
+                mRequestDialog.show();
+//                Intent intent = new Intent(MainActivity.this.getBaseContext(), NavigationActivity.class);
+//                startActivity(intent);
 
 //                Log.d(TAG, "onSearchAction()");
             }

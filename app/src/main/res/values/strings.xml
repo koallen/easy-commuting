@@ -3,4 +3,5 @@
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_navigation">NavigationActivity</string>
     <string name="search_hint">Navigate</string>
+    <string name="please_wait">Processing your request...</string>
 </resources>
