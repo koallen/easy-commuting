@@ -103,6 +103,7 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
 
             @Override
             public void onSearchAction() {
+                Log.d("MainAvtivity", "Search button presses");
                 presenter.fetchUVIndexData();
             }
         });

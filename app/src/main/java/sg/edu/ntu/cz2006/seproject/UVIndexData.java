@@ -8,9 +8,12 @@ import java.util.List;
 /**
  * Created by koAllen on 17/3/16.
  */
-@Root(name = "data")
+@Root(name =  "data")
 public class UVIndexData {
-    @ElementList(name = "uv")
-    private List<UVIndex> uvIndexes;
+    @ElementList(entry = "uv", inline = true)
+    private List<String> uvIndexes;
 
+    public List<String> getUV() {
+        return uvIndexes;
+    }
 }

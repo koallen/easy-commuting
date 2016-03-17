@@ -10,31 +10,12 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
-//        multiDexEnabled true
     }
-//    buildTypes {
-//        debug {
-//            minifyEnabled true
-//            shrinkResources true
-//        }
-//        release {
-//            minifyEnabled true
-//            shrinkResources true
-//        }
-//    }
-//    packagingOptions {
-//        exclude 'META-INF/DEPENDENCIES'
-//        exclude 'META-INF/NOTICE'
-//        exclude 'META-INF/LICENSE'
-//        exclude 'META-INF/LICENSE.txt'
-//        exclude 'META-INF/NOTICE.txt'
-//    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-//    compile 'com.android.support:multidex:1.0.0'
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
     compile 'com.google.android.gms:play-services-maps:8.4.0'
@@ -49,7 +30,7 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
     compile 'com.squareup.retrofit2:retrofit:2.0.0'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.0.0'
-    //compile 'io.reactivex:rxjava:1.1.1'
+    compile 'io.reactivex:rxjava:1.1.1'
     compile 'io.reactivex:rxandroid:1.1.0'
     compile('com.squareup.retrofit2:converter-simplexml:2.0.0') {
         exclude module: 'stax'
