@@ -1,6 +1,7 @@
 package sg.edu.ntu.cz2006.seproject;
 
-import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Path;
 import org.simpleframework.xml.Root;
 
 /**
@@ -8,10 +9,11 @@ import org.simpleframework.xml.Root;
  */
 @Root(name = "channel", strict = false)
 public class PSIResponse {
-    @Element(name = "item")
-    private PSIData psiData;
+    @Attribute(name = "value")
+    @Path("item/region[1]/record/reading[1]")
+    private int psiReading;
 
-    public PSIData getPsiData() {
-        return psiData;
+    public int getPsiReading() {
+        return psiReading;
     }
 }

@@ -19,4 +19,10 @@ public interface NEAService {
             @Query("dataset") String dataset,
             @Query("keyref") String apiKey
     );
+
+    @GET("api/WebAPI/")
+    Observable<WeatherResponse> listWeather(
+            @Query("dataset") String dataset,
+            @Query("keyref") String apiKey
+    );
 }

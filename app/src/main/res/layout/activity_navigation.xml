@@ -16,10 +16,4 @@
         android:id="@+id/textview"
         android:text="Hello there! I'm at NavigationActivity"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="buttonOnClickListener"
-        android:text="Click me"/>
-
 </LinearLayout>

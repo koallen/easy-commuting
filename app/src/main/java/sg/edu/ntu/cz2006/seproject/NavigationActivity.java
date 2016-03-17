@@ -29,8 +29,4 @@ public class NavigationActivity extends AppCompatActivity {
         text.setText(apiData);
 
     }
-
-    public void buttonOnClickListener(View view) {
-        text.setText("I just clicked a button");
-    }
 }

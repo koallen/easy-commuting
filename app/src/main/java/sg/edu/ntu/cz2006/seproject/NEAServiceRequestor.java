@@ -34,4 +34,10 @@ public class NEAServiceRequestor {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
+
+    public Observable<WeatherResponse> getWeather() {
+        return service.listWeather("2hr_nowcast", "781CF461BB6606AD62B1E1CAA87ECA612A87DF33A3ECDC11")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
 }

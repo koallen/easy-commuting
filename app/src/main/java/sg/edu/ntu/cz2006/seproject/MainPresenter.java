@@ -4,11 +4,10 @@ import android.util.Log;
 
 import com.hannesdorfmann.mosby.mvp.MvpBasePresenter;
 
-import java.io.IOException;
-
-import retrofit2.Response;
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Func2;
+import rx.functions.Func3;
 
 /**
  * Created by koAllen on 15/3/16.
@@ -23,9 +22,22 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
 
         data = "";
 
-        Observable<UVIndexResponse> uvdata = new NEAServiceRequestor().getUVIndex();
+        NEAServiceRequestor requestor = new NEAServiceRequestor();
 
-        uvdata.subscribe(new Subscriber<UVIndexResponse>() {
+        Observable.zip(
+                requestor.getUVIndex(),
+                requestor.getPSI(),
+                requestor.getWeather(),
+                new Func3<UVIndexResponse, PSIResponse, WeatherResponse, String>() {
+                    @Override
+                    public String call(UVIndexResponse uvIndexResponse, PSIResponse psiResponse, WeatherResponse weatherResponse) {
+                        data = "UV Index Reading: " + uvIndexResponse.getUvIndexReading();
+                        data += "\nPSI Reading: " + psiResponse.getPsiReading();
+                        data += "\nWeather: " + weatherResponse.getWeatherDataList();
+                        return data;
+                    }
+                }
+        ).subscribe(new Subscriber<String>() {
             @Override
             public void onCompleted() {
 
@@ -37,25 +49,11 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
             }
 
             @Override
-            public void onNext(UVIndexResponse uvIndexData) {
-                data += uvIndexData.getUVIndexData().getUV();
-            }
-        });
-
-        new NEAServiceRequestor().getPSI().subscribe(new Subscriber<PSIResponse>() {
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Log.d("MAINPRESENTER", e.toString());
-            }
-
-            @Override
-            public void onNext(PSIResponse psiResponse) {
-                data += psiResponse.getPsiData().getPsiRegions().toString();
+            public void onNext(String o) {
+                Log.d("MAINPRESENTER", o);
+                if (isViewAttached()) {
+                    getView().showData(o);
+                }
             }
         });
     }
