@@ -7,7 +7,7 @@ import org.simpleframework.xml.Root;
 /**
  * Created by koAllen on 16/3/16.
  */
-@Root(name = "data")
+@Root(name = "uv")
 public class UVIndex {
     @Attribute(name = "hr")
     private String time;
