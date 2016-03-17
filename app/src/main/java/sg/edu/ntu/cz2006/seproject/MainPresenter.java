@@ -2,14 +2,9 @@ package sg.edu.ntu.cz2006.seproject;
 
 import com.hannesdorfmann.mosby.mvp.MvpBasePresenter;
 
-import java.io.IOException;
+import java.util.List;
 
-import okhttp3.ResponseBody;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by koAllen on 15/3/16.
@@ -22,7 +17,7 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
         }
 
         new NEAServiceRequestor().getUVIndex()
-                .subscribe(new Subscriber<ResponseBody>() {
+                .subscribe(new Subscriber<List<UVIndex>>() {
                     @Override
                     public void onCompleted() {
 
@@ -34,13 +29,10 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
                     }
 
                     @Override
-                    public void onNext(ResponseBody responseBody) {
-                        if (isViewAttached())
-                            try {
-                                getView().showData(responseBody.string());
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                    public void onNext(List<UVIndex> uvIndexes) {
+                        if (isViewAttached()) {
+                            getView().showData(uvIndexes.toString());
+                        }
                     }
                 });
     }

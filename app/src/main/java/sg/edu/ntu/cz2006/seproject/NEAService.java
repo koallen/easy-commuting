@@ -13,7 +13,7 @@ import rx.Observable;
  */
 public interface NEAService {
     @GET("api/WebAPI/")
-    Observable<ResponseBody> listUVIndex(
+    Observable<List<UVIndex>> listUVIndex(
             @Query("dataset") String dataset,
             @Query("keyref") String apiKey);
 }
