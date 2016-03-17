@@ -14,7 +14,8 @@
         android:layout_height="70dp"
         android:id="@+id/sheet_textview"
         android:background="@color/colorPrimary"
-        android:layout_gravity="center_horizontal"
+        android:textAlignment="center"
+        android:textAllCaps="true"
         android:text="ETA 20 minutes"/>
 
     <android.support.v7.widget.RecyclerView

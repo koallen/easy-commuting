@@ -52,9 +52,9 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         text.setText(apiData);
 
         List<InfoData> infoDataList = new ArrayList<InfoData>();
-        infoDataList.add(new InfoData("aaa", "bbbb"));
-        infoDataList.add(new InfoData("aaa", "bbbb"));
-        infoDataList.add(new InfoData("aaa", "bbbb"));
+        infoDataList.add(new InfoData("UV Index: 0", "You can go out!"));
+        infoDataList.add(new InfoData("PSI Index: 55", "Moderate level"));
+        infoDataList.add(new InfoData("Weather: Sunny", "Go enjoy the sun"));
         infoDataList.add(new InfoData("aaa", "bbbb"));
         infoDataList.add(new InfoData("aaa", "bbbb"));
         infoDataList.add(new InfoData("aaa", "bbbb"));
