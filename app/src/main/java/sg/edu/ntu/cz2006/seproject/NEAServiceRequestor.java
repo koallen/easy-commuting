@@ -14,6 +14,11 @@ public class NEAServiceRequestor {
     private Retrofit retrofit;
     private NEAService service;
 
+    private static final String apiKey = "781CF461BB6606AD62B1E1CAA87ECA612A87DF33A3ECDC11";
+    private static final String uvDataSet = "uvi";
+    private static final String psiDataSet = "psi_update";
+    private static final String weatherDataSet = "2hr_nowcast";
+
     public NEAServiceRequestor() {
         retrofit = new Retrofit.Builder()
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
@@ -24,19 +29,19 @@ public class NEAServiceRequestor {
     }
 
     public Observable<UVIndexResponse> getUVIndex() {
-        return service.listUVIndex("uvi", "781CF461BB6606AD62B1E1CAA87ECA612A87DF33A3ECDC11")
+        return service.listUVIndex(uvDataSet, apiKey)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<PSIResponse> getPSI() {
-        return service.listPSI("psi_update", "781CF461BB6606AD62B1E1CAA87ECA612A87DF33A3ECDC11")
+        return service.listPSI(psiDataSet, apiKey)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<WeatherResponse> getWeather() {
-        return service.listWeather("2hr_nowcast", "781CF461BB6606AD62B1E1CAA87ECA612A87DF33A3ECDC11")
+        return service.listWeather(weatherDataSet, apiKey)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
