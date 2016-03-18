@@ -60,13 +60,13 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        LinearLayout bottomSheetViewgroup
-                = (LinearLayout) findViewById(R.id.bottom_sheet);
-
-        BottomSheetBehavior bottomSheetBehavior =
-                BottomSheetBehavior.from(bottomSheetViewgroup);
-
-        bottomSheetBehavior.setPeekHeight(70);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+//        LinearLayout bottomSheetViewgroup
+//                = (LinearLayout) findViewById(R.id.bottom_sheet);
+//
+//        BottomSheetBehavior bottomSheetBehavior =
+//                BottomSheetBehavior.from(bottomSheetViewgroup);
+//
+//        bottomSheetBehavior.setPeekHeight(70);
+//        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 }

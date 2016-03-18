@@ -1,7 +1,6 @@
 package sg.edu.ntu.cz2006.seproject;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 
