@@ -1,5 +1,6 @@
 package sg.edu.ntu.cz2006.seproject;
 
+import android.content.DialogInterface;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.cocosw.bottomsheet.BottomSheet;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -55,7 +57,14 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         InformationAdapter adapter = new InformationAdapter(infoDataList);
         recyclerView.setAdapter(adapter);
 
-
+//        new BottomSheet.Builder(this).title("title").sheet(R.layout.sheet_layout).listener(new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                switch (which) {
+//
+//                }
+//            }
+//        }).show();
     }
 
     @Override

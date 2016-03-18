@@ -1,29 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<LinearLayout-->
-    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="300dp"-->
-    <!--android:orientation="vertical"-->
-    <!--android:id="@+id/bottom_sheet"-->
-    <!--app:layout_behavior="@string/bottom_sheet_behavior"-->
-    <!--app:behavior_peekHeight="70dp">-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="300dp"
+    android:orientation="vertical"
+    android:id="@+id/bottom_sheet"
+    app:layout_behavior="@string/bottom_sheet_behavior"
+    app:behavior_peekHeight="70dp">
 
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="70dp"-->
-        <!--android:text="Dandelion Chocolate"-->
-        <!--android:background="#FFFFFF"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Display1"-->
-        <!--android:textColor="@android:color/black"/>-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="70dp"
+        android:text="Dandelion Chocolate"
+        android:background="#FFFFFF"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textColor="@android:color/black"/>
 
     <android.support.v7.widget.RecyclerView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_behavior="@string/bottom_sheet_behavior"
-        app:behavior_peekHeight="70dp"
         android:id="@+id/nav_rv"/>
 
-<!--</LinearLayout>-->
+</LinearLayout>

@@ -24,7 +24,8 @@
         <!--app:behavior_peekHeight="95dp"-->
         <!--app:layout_behavior="@string/bottom_sheet_behavior">-->
 
-        <include layout="@layout/sheet_layout" />
+        <include layout="@layout/sheet_layout"
+            android:id="@+id/bottom_sheet"/>
     <!--</FrameLayout>-->
 
     <!--<android.support.design.widget.FloatingActionButton-->
