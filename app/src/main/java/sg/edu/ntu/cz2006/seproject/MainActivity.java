@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.style.CharacterStyle;
 import android.util.Log;
 import android.view.View;
 import android.view.MenuItem;
@@ -23,13 +24,23 @@ import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.AutocompletePrediction;
+import com.google.android.gms.location.places.AutocompletePredictionBuffer;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -42,6 +53,8 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
     private GoogleApiClient mGoogleApiClient;
     private MaterialDialog mRequestDialog;
     private Location mLastLocation;
+    private LatLngBounds mLatLngBounds;
+    private AutocompleteFilter mAutoCompleteFilter;
     private GoogleMap mMap;
 
     private static final LatLng SINGAPORE = new LatLng(1.3, 103.8);
@@ -69,6 +82,15 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
                 })
                 .build();
 
+        mLatLngBounds = new LatLngBounds.Builder()
+                .include(new LatLng(1.19, 103.59))
+                .include(new LatLng(1.46, 104.03))
+                .build();
+
+        mAutoCompleteFilter = new AutocompleteFilter.Builder()
+                .setTypeFilter(AutocompleteFilter.TYPE_FILTER_NONE)
+                .build();
+
         mSearchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
 
         if (mGoogleApiClient == null) {
@@ -76,29 +98,54 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
-                    .build();
+                    .addApi(Places.GEO_DATA_API)
+                            .build();
         }
 
         mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
             @Override
             public void onSearchTextChanged(String oldQuery, final String newQuery) {
 
-                //get suggestions based on newQuery
+                if (!oldQuery.equals("") && newQuery.equals("")) {
+                    mSearchView.clearSuggestions();
+                } else {
+                    mSearchView.showProgress();
+
+                    //get suggestions based on newQuery
+                    PendingResult<AutocompletePredictionBuffer> result =
+                            Places.GeoDataApi.getAutocompletePredictions(mGoogleApiClient, newQuery,
+                                    mLatLngBounds, mAutoCompleteFilter);
+
+                    result.setResultCallback(new ResultCallback<AutocompletePredictionBuffer>() {
+                        @Override
+                        public void onResult(@NonNull AutocompletePredictionBuffer autocompletePredictions) {
+                            List<PlaceSuggestion> newSuggestions = new ArrayList<PlaceSuggestion>();
+
+                            for (int i = 0; i < 4; ++i) {
+                                try {
+                                    newSuggestions.add(new PlaceSuggestion(autocompletePredictions.get(i).getPrimaryText(null).toString()));
+                                } catch (Exception e) { }
+
+//                            Log.d("PLACES", prediction.getPrimaryText(null).toString());
+                            }
+
+                            autocompletePredictions.release();
+                            mSearchView.swapSuggestions(newSuggestions);
+                            mSearchView.hideProgress();
+                        }
+                    });
+                }
 
                 //pass them on to the search view
-//                mSearchView.swapSuggestions(newSuggestions);
+                Log.d("MAINACTIVITY", "Suggestion changed");
             }
         });
 
         mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
             public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
-
-//                ColorSuggestion colorSuggestion = (ColorSuggestion) searchSuggestion;
-//                refreshBackgroundColor(colorSuggestion.getColor().getName(), colorSuggestion.getColor().getHex());
-
-//                Log.d(TAG, "onSuggestionClicked()");
-
+                Log.d("MAINACTIVITY", "onSuggestionClicked()");
+                presenter.fetchUVIndexData();
             }
 
             @Override
@@ -188,9 +235,9 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
 
     @Override
     public void showData(String apiData) {
-        mRequestDialog.dismiss();
         Intent nav = new Intent(MainActivity.this, NavigationActivity.class);
         nav.putExtra("EXTRA_UVINDEX_DATA", apiData);
+        mRequestDialog.dismiss();
         startActivity(nav);
     }
 

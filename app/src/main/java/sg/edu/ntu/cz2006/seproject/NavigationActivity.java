@@ -1,17 +1,13 @@
 package sg.edu.ntu.cz2006.seproject;
 
-import android.app.SearchManager;
-import android.content.Intent;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.flipboard.bottomsheet.BottomSheetLayout;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -23,8 +19,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class NavigationActivity extends AppCompatActivity implements OnMapReadyCallback {
-    @Bind(R.id.textview)
-    TextView text;
+//    @Bind(R.id.textview)
+//    TextView text;
     @Bind(R.id.nav_rv)
     RecyclerView recyclerView;
 
@@ -49,31 +45,28 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
             apiData = extras.getString("EXTRA_UVINDEX_DATA");
         }
         // show it in TextView
-        text.setText(apiData);
+//        text.setText(apiData);
 
         List<InfoData> infoDataList = new ArrayList<InfoData>();
         infoDataList.add(new InfoData("UV Index: 0", "You can go out!"));
         infoDataList.add(new InfoData("PSI Index: 55", "Moderate level"));
         infoDataList.add(new InfoData("Weather: Sunny", "Go enjoy the sun"));
-        infoDataList.add(new InfoData("aaa", "bbbb"));
-        infoDataList.add(new InfoData("aaa", "bbbb"));
-        infoDataList.add(new InfoData("aaa", "bbbb"));
-        infoDataList.add(new InfoData("aaa", "bbbb"));
-        infoDataList.add(new InfoData("aaa", "bbbb"));
-        infoDataList.add(new InfoData("aaa", "bbbb"));
-        infoDataList.add(new InfoData("aaa", "bbbb"));
-        infoDataList.add(new InfoData("aaa", "bbbb"));
-
 
         InformationAdapter adapter = new InformationAdapter(infoDataList);
         recyclerView.setAdapter(adapter);
 
-//        BottomSheetBehavior behavior = BottomSheetBehavior.from(findViewById(R.id.sheet_layout));
-//        behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        LinearLayout bottomSheetViewgroup
+                = (LinearLayout) findViewById(R.id.bottom_sheet);
 
+        BottomSheetBehavior bottomSheetBehavior =
+                BottomSheetBehavior.from(bottomSheetViewgroup);
+
+        bottomSheetBehavior.setPeekHeight(70);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 }
