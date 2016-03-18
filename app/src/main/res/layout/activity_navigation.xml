@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<com.sothree.slidinguppanel.FloatingActionButtonLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    sothree:umanoFabMode="fade">
 <com.sothree.slidinguppanel.SlidingUpPanelLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sothree="http://schemas.android.com/apk/res-auto"
@@ -13,7 +22,6 @@
     <!-- MAIN CONTENT -->
     <android.support.design.widget.CoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -22,7 +30,7 @@
 
         <!-- GOOGLE MAP -->
         <include layout="@layout/content_main"
-            android:id="@+id/bottom_sheet"/>
+            android:id="@+id/google_map"/>
 
     </android.support.design.widget.CoordinatorLayout>
 
@@ -30,3 +38,14 @@
     <include layout="@layout/sheet_layout"/>
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/ic_my_location_white_24px" />
+
+    </com.sothree.slidinguppanel.FloatingActionButtonLayout>
