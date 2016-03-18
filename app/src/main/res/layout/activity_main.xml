@@ -36,12 +36,12 @@
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_my_location_white_24px" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:text="I'm testing it out"
-        android:background="#FFFFFF"
-        app:layout_behavior="@string/bottom_sheet_behavior"
-        app:behavior_peekHeight="70dp" />
+    <!--<TextView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="70dp"-->
+        <!--android:text="I'm testing it out"-->
+        <!--android:background="#FFFFFF"-->
+        <!--app:layout_behavior="@string/bottom_sheet_behavior"-->
+        <!--app:behavior_peekHeight="70dp" />-->
 
 </android.support.design.widget.CoordinatorLayout>

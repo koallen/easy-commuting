@@ -29,19 +29,19 @@ public class NEAServiceRequestor {
     }
 
     public Observable<UVIndexResponse> getUVIndex() {
-        return service.listUVIndex(uvDataSet, apiKey)
+        return service.getUVIndex(uvDataSet, apiKey)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<PSIResponse> getPSI() {
-        return service.listPSI(psiDataSet, apiKey)
+        return service.getPSI(psiDataSet, apiKey)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<WeatherResponse> getWeather() {
-        return service.listWeather(weatherDataSet, apiKey)
+        return service.getWeather(weatherDataSet, apiKey)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

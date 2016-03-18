@@ -21,6 +21,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.2.1'
     compile 'com.android.support:cardview-v7:23.2.1'
     compile 'com.google.android.gms:play-services-maps:8.4.0'
+    compile 'com.google.maps.android:android-maps-utils:0.4.3'
     compile 'com.google.android.gms:play-services-location:8.4.0'
     compile 'com.github.arimorty:floatingsearchview:1.1.2'
     compile 'com.hannesdorfmann.mosby:mvp:2.0.1'
@@ -39,4 +40,9 @@ dependencies {
         exclude module: 'stax-api'
         exclude module: 'xpp3'
     }
+    compile 'com.squareup.retrofit2:converter-gson:2.0.0'
+    compile('com.mikepenz:materialdrawer:5.1.5@aar') {
+        transitive = true
+    }
+    compile 'com.sothree.slidinguppanel:library:3.3.0'
 }

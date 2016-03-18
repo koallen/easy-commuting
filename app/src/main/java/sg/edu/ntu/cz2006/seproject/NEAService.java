@@ -9,19 +9,19 @@ import rx.Observable;
  */
 public interface NEAService {
     @GET("api/WebAPI/")
-    Observable<UVIndexResponse> listUVIndex(
+    Observable<UVIndexResponse> getUVIndex(
             @Query("dataset") String dataset,
             @Query("keyref") String apiKey
     );
 
     @GET("api/WebAPI/")
-    Observable<PSIResponse> listPSI(
+    Observable<PSIResponse> getPSI(
             @Query("dataset") String dataset,
             @Query("keyref") String apiKey
     );
 
     @GET("api/WebAPI/")
-    Observable<WeatherResponse> listWeather(
+    Observable<WeatherResponse> getWeather(
             @Query("dataset") String dataset,
             @Query("keyref") String apiKey
     );

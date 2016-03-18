@@ -14,7 +14,7 @@ public interface LTAService {
             "Accept: application/json"
     })
     @GET("BusArrival")
-    Observable<BusArrivalResponse> listBusArrival(
+    Observable<BusArrivalResponse> getBusArrival(
             @Header("AccountKey") String accountKey,
             @Header("UniqueUserID") String uniqueUserID,
             @Query("BusStopID") String busStopID

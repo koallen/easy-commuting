@@ -1,18 +1,18 @@
 package sg.edu.ntu.cz2006.seproject;
 
-import android.content.DialogInterface;
-import android.support.design.widget.BottomSheetBehavior;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.cocosw.bottomsheet.BottomSheet;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +21,10 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class NavigationActivity extends AppCompatActivity implements OnMapReadyCallback {
-//    @Bind(R.id.textview)
-//    TextView text;
     @Bind(R.id.nav_rv)
     RecyclerView recyclerView;
+    private String apiData;
+    private static final LatLng SINGAPORE = new LatLng(1.3, 103.8);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,40 +42,27 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
 
         // get api data
         Bundle extras = getIntent().getExtras();
-        String apiData = "No UV Index data";
+        apiData = "No UV Index data";
         if (extras != null) {
             apiData = extras.getString("EXTRA_UVINDEX_DATA");
         }
-        // show it in TextView
-//        text.setText(apiData);
 
         List<InfoData> infoDataList = new ArrayList<InfoData>();
         infoDataList.add(new InfoData("UV Index: 0", "You can go out!"));
         infoDataList.add(new InfoData("PSI Index: 55", "Moderate level"));
         infoDataList.add(new InfoData("Weather: Sunny", "Go enjoy the sun"));
+        infoDataList.add(new InfoData("Route: take 179", "It's gonna take a long time"));
 
         InformationAdapter adapter = new InformationAdapter(infoDataList);
         recyclerView.setAdapter(adapter);
-
-//        new BottomSheet.Builder(this).title("title").sheet(R.layout.sheet_layout).listener(new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                switch (which) {
-//
-//                }
-//            }
-//        }).show();
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-//        LinearLayout bottomSheetViewgroup
-//                = (LinearLayout) findViewById(R.id.bottom_sheet);
-//
-//        BottomSheetBehavior bottomSheetBehavior =
-//                BottomSheetBehavior.from(bottomSheetViewgroup);
-//
-//        bottomSheetBehavior.setPeekHeight(70);
-//        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        List<LatLng> waypoints = PolyUtil.decode(apiData);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SINGAPORE, 10));
+        googleMap.addPolyline(new PolylineOptions()
+                .addAll(waypoints)
+                .color(Color.BLUE));
     }
 }
