@@ -12,9 +12,11 @@ import rx.functions.Func4;
  * Created by koAllen on 15/3/16.
  */
 public class MainPresenter extends MvpBasePresenter<MainView> {
+
     private String data = "";
-    private NEAServiceRequestor neaServiceRequestor = new NEAServiceRequestor();
-    private GoogleServiceRequestor googleServiceRequestor = new GoogleServiceRequestor();
+    // get singleton objects
+    private NEAServiceHelper mNeaServiceRequestor = NEAServiceHelper.getInstance();
+    private GoogleServiceHelper mGoogleServiceHelper = GoogleServiceHelper.getInstance();
 
     public void fetchUVIndexData(String origin, String destination) {
         if (isViewAttached()) {
@@ -24,10 +26,10 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
         data = "";
 
         Observable.zip(
-                neaServiceRequestor.getUVIndex(),
-                neaServiceRequestor.getPSI(),
-                neaServiceRequestor.getWeather(),
-                googleServiceRequestor.getRoute(origin, destination),
+                mNeaServiceRequestor.getUVIndex(),
+                mNeaServiceRequestor.getPSI(),
+                mNeaServiceRequestor.getWeather(),
+                mGoogleServiceHelper.getRoute(origin, destination),
                 new Func4<UVIndexResponse, PSIResponse, WeatherResponse, RouteResponse, String>() {
                     @Override
                     public String call(UVIndexResponse uvIndexResponse, PSIResponse psiResponse, WeatherResponse weatherResponse, RouteResponse routeResponse) {

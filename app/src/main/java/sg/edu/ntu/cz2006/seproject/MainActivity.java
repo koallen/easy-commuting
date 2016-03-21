@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -35,6 +36,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
@@ -49,7 +51,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 
-public class MainActivity extends MvpActivity<MainView, MainPresenter> implements OnMapReadyCallback, MainView, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends MvpActivity<MainView, MainPresenter> implements OnMapReadyCallback, MainView {
 
     private FloatingSearchView mSearchView;
     private GoogleApiClient mGoogleApiClient;
@@ -71,7 +73,11 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
                 (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        final Drawer drawer = new DrawerBuilder().withActivity(this).build();
+        // get google api client
+        mGoogleApiClient = MyApp.getGoogleApiHelper().getGoogleApiClient();
+//        mLastLocation = MyApp.getGoogleApiHelper().getLastLocation();
+
+//        final Drawer drawer = new DrawerBuilder().withActivity(this).build();
 
         mRequestDialog = new MaterialDialog.Builder(MainActivity.this)
                 .content(R.string.please_wait)
@@ -96,15 +102,6 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
                 .build();
 
         mSearchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
-
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .addApi(Places.GEO_DATA_API)
-                    .build();
-        }
 
         mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
             @Override
@@ -150,18 +147,19 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
             @Override
             public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
                 Log.d("MAINACTIVITY", "onSuggestionClicked()");
-                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
-                }
-                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                        mGoogleApiClient);
+//                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                    // TODO: Consider calling
+//                    //    ActivityCompat#requestPermissions
+//                    // here to request the missing permissions, and then overriding
+//                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//                    //                                          int[] grantResults)
+//                    // to handle the case where the user grants the permission. See the documentation
+//                    // for ActivityCompat#requestPermissions for more details.
+//                    return;
+//                }
+//                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+//                        mGoogleApiClient);
+                mLastLocation = MyApp.getGoogleApiHelper().getLastLocation();
                 String origin = mLastLocation.getLatitude() + "," + mLastLocation.getLongitude();
                 String destination = searchSuggestion.getBody();
                 presenter.fetchUVIndexData(origin, destination);
@@ -170,18 +168,19 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
             @Override
             public void onSearchAction() {
                 Log.d("MainAvtivity", "Search button presses");
-                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
-                }
-                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                        mGoogleApiClient);
+//                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                    // TODO: Consider calling
+//                    //    ActivityCompat#requestPermissions
+//                    // here to request the missing permissions, and then overriding
+//                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//                    //                                          int[] grantResults)
+//                    // to handle the case where the user grants the permission. See the documentation
+//                    // for ActivityCompat#requestPermissions for more details.
+//                    return;
+//                }
+//                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+//                        mGoogleApiClient);
+                mLastLocation = MyApp.getGoogleApiHelper().getLastLocation();
                 String origin = mLastLocation.getLatitude() + "," + mLastLocation.getLongitude();
                 String destination = mSearchView.getQuery();
                 presenter.fetchUVIndexData(origin, destination);
@@ -199,7 +198,8 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
                         startActivity(about);
                         break;
                     case R.id.action_search:
-                        Toast.makeText(getApplicationContext(), "Voice Search not available", Toast.LENGTH_SHORT).show();
+                        displaySpeechRecognizer();
+//                        Toast.makeText(getApplicationContext(), "Voice Search not available", Toast.LENGTH_SHORT).show();
                         break;
                     default:
                         break;
@@ -234,12 +234,12 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
     }
 
     protected void onStart() {
-        mGoogleApiClient.connect();
+        MyApp.getGoogleApiHelper().connect();
         super.onStart();
     }
 
     protected void onStop() {
-        mGoogleApiClient.disconnect();
+        MyApp.getGoogleApiHelper().disconnect();
         super.onStop();
     }
 
@@ -265,25 +265,31 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.setMyLocationEnabled(true);
     }
 
     @OnClick(R.id.fab)
     public void onFabClicked() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            // TODO: Consider calling
+//            //    ActivityCompat#requestPermissions
+//            // here to request the missing permissions, and then overriding
+//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//            //                                          int[] grantResults)
+//            // to handle the case where the user grants the permission. See the documentation
+//            // for ActivityCompat#requestPermissions for more details.
+//            return;
+//        }
+//        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+//                mGoogleApiClient);
+        mLastLocation = MyApp.getGoogleApiHelper().getLastLocation();
+        if (mLastLocation != null) {
+            LatLng myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            locateUser(myLocation);
+        } else {
+            Toast.makeText(this, "Location not available", Toast.LENGTH_SHORT).show();
         }
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        LatLng myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        locateUser(myLocation);
     }
 
     @Override
@@ -300,33 +306,33 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
     }
 
     @Override
-    public void onConnected(Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    @Override
     public void showLoading() {
         mRequestDialog.show();
+    }
+
+    private static final int SPEECH_REQUEST_CODE = 0;
+
+    // Create an intent that can start the Speech Recognizer activity
+    private void displaySpeechRecognizer() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+// Start the activity, the intent will be populated with the speech text
+        startActivityForResult(intent, SPEECH_REQUEST_CODE);
+    }
+
+    // This callback is invoked when the Speech Recognizer returns.
+// This is where you process the intent and extract the speech text from the intent.
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,
+                                    Intent data) {
+        if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK) {
+            List<String> results = data.getStringArrayListExtra(
+                    RecognizerIntent.EXTRA_RESULTS);
+            String spokenText = results.get(0);
+            // Do something with spokenText
+            mSearchView.setSearchText(spokenText);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

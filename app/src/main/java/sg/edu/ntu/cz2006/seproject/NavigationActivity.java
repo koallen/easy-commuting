@@ -10,9 +10,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -32,8 +35,7 @@ import butterknife.OnClick;
 public class NavigationActivity extends AppCompatActivity implements OnMapReadyCallback {
     @Bind(R.id.nav_rv)
     RecyclerView recyclerView;
-    @Bind(R.id.fab)
-    FloatingActionButton mFab;
+
     private String apiData;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
@@ -53,6 +55,10 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(NavigationActivity.this);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
+
+        // get google api client
+        mGoogleApiClient = MyApp.getGoogleApiHelper().getGoogleApiClient();
+//        mLastLocation = MyApp.getGoogleApiHelper().getLastLocation();
 
         // get api data
         Bundle extras = getIntent().getExtras();
@@ -85,32 +91,48 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        googleMap.setMyLocationEnabled(true);
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SINGAPORE, 10));
-        googleMap.addPolyline(new PolylineOptions()
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        mMap.setMyLocationEnabled(true);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SINGAPORE, 10));
+        mMap.addPolyline(new PolylineOptions()
                 .addAll(waypoints)
                 .color(Color.BLUE));
     }
 
     @OnClick(R.id.fab)
     public void onFabClicked() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            // TODO: Consider calling
+//            //    ActivityCompat#requestPermissions
+//            // here to request the missing permissions, and then overriding
+//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//            //                                          int[] grantResults)
+//            // to handle the case where the user grants the permission. See the documentation
+//            // for ActivityCompat#requestPermissions for more details.
+//            return;
+//        }
+//        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+//                mGoogleApiClient);
+        mLastLocation = MyApp.getGoogleApiHelper().getLastLocation();
+        if (mLastLocation != null) {
+            LatLng myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            locateUser(myLocation);
+        } else {
+            Toast.makeText(this, "Location not available", Toast.LENGTH_SHORT).show();
         }
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        LatLng myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        locateUser(myLocation);
     }
 
     public void locateUser(LatLng userLocation) {
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
+    }
+
+    protected void onStart() {
+        MyApp.getGoogleApiHelper().connect();
+        super.onStart();
+    }
+
+    protected void onStop() {
+        MyApp.getGoogleApiHelper().disconnect();
+        super.onStop();
     }
 }

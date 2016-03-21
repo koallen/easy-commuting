@@ -8,40 +8,48 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * Created by koAllen on 17/3/16.
+ * Created by koAllen on 21/3/16.
  */
-public class NEAServiceRequestor {
-    private Retrofit retrofit;
-    private NEAService service;
+public class NEAServiceHelper {
+    private static NEAServiceHelper ourInstance = new NEAServiceHelper();
 
+    public static NEAServiceHelper getInstance() {
+        return ourInstance;
+    }
+
+    // class attributes
+    private Retrofit mRetrofit;
+    private NEAService mService;
+
+    // some constants for API requests
     private static final String apiKey = "781CF461BB6606AD62B1E1CAA87ECA612A87DF33A3ECDC11";
     private static final String uvDataSet = "uvi";
     private static final String psiDataSet = "psi_update";
     private static final String weatherDataSet = "2hr_nowcast";
 
-    public NEAServiceRequestor() {
-        retrofit = new Retrofit.Builder()
+    private NEAServiceHelper() {
+        mRetrofit = new Retrofit.Builder()
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .baseUrl("http://www.nea.gov.sg/")
                 .addConverterFactory(SimpleXmlConverterFactory.create())
                 .build();
-        service = retrofit.create(NEAService.class);
+        mService = mRetrofit.create(NEAService.class);
     }
 
     public Observable<UVIndexResponse> getUVIndex() {
-        return service.getUVIndex(uvDataSet, apiKey)
+        return mService.getUVIndex(uvDataSet, apiKey)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<PSIResponse> getPSI() {
-        return service.getPSI(psiDataSet, apiKey)
+        return mService.getPSI(psiDataSet, apiKey)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<WeatherResponse> getWeather() {
-        return service.getWeather(weatherDataSet, apiKey)
+        return mService.getWeather(weatherDataSet, apiKey)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

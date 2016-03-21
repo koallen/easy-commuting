@@ -3,19 +3,25 @@ package sg.edu.ntu.cz2006.seproject;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * Created by koAllen on 18/3/16.
+ * Created by koAllen on 21/3/16.
  */
-public class GoogleServiceRequestor {
+public class GoogleServiceHelper {
+    private static GoogleServiceHelper ourInstance = new GoogleServiceHelper();
 
-    private Retrofit retrofit;
-    private GoogleService service;
+    public static GoogleServiceHelper getInstance() {
+        return ourInstance;
+    }
 
+    // class attributes
+    private Retrofit mRetrofit;
+    private GoogleService mService;
+
+    // some constants for API requests
     private static final String apiKey = "AIzaSyCRUDBJJ0hQ1_R6byuMZGpiDy0vXlMmHwc";
     private static final String travelMode = "transit";
     private static final String avoid = "indoor";
@@ -23,17 +29,19 @@ public class GoogleServiceRequestor {
     private static final String transitMode = "bus";
     private static final String transitPreference = "fewer_transfers";
 
-    public GoogleServiceRequestor() {
-        retrofit = new Retrofit.Builder()
+    private GoogleServiceHelper() {
+        // create a retrofit client for API requests
+        mRetrofit = new Retrofit.Builder()
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .baseUrl("https://maps.googleapis.com/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        service = retrofit.create(GoogleService.class);
+        // create the services available from GoogleService
+        mService = mRetrofit.create(GoogleService.class);
     }
 
     public Observable<RouteResponse> getRoute(String origin, String destination) {
-        return service.getRoute(
+        return mService.getRoute(
                 origin,
                 destination,
                 apiKey,
@@ -44,4 +52,5 @@ public class GoogleServiceRequestor {
                 transitPreference
         ).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
+
 }
