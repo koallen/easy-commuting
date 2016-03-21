@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +25,7 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
+import com.hannesdorfmann.mosby.mvp.MvpActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +34,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class NavigationActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class NavigationActivity extends MvpActivity<NavigationView, NavigationPresenter> implements OnMapReadyCallback {
     @Bind(R.id.nav_rv)
     RecyclerView recyclerView;
 
@@ -133,5 +135,11 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
     protected void onStop() {
         MyApp.getGoogleApiHelper().disconnect();
         super.onStop();
+    }
+
+    @NonNull
+    @Override
+    public NavigationPresenter createPresenter() {
+        return new NavigationPresenter();
     }
 }
