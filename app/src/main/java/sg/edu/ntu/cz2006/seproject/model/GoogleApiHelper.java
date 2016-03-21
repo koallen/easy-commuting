@@ -1,7 +1,6 @@
-package sg.edu.ntu.cz2006.seproject;
+package sg.edu.ntu.cz2006.seproject.model;
 
 import android.Manifest;
-import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;

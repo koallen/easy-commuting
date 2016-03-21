@@ -1,14 +1,14 @@
-package sg.edu.ntu.cz2006.seproject;
+package sg.edu.ntu.cz2006.seproject.presenter;
 
 import android.util.Log;
 
-import com.google.android.gms.common.api.Api;
 import com.hannesdorfmann.mosby.mvp.MvpBasePresenter;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.functions.Func4;
 import rx.schedulers.Schedulers;
+import sg.edu.ntu.cz2006.seproject.model.ApiRequestHelper;
+import sg.edu.ntu.cz2006.seproject.view.MainView;
 
 public class MainPresenter extends MvpBasePresenter<MainView> {
 

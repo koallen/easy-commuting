@@ -1,4 +1,4 @@
-package sg.edu.ntu.cz2006.seproject;
+package sg.edu.ntu.cz2006.seproject.model;
 
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Path;

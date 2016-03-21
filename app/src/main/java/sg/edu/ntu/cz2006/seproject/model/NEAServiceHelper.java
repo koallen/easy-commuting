@@ -1,4 +1,4 @@
-package sg.edu.ntu.cz2006.seproject;
+package sg.edu.ntu.cz2006.seproject.model;
 
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;

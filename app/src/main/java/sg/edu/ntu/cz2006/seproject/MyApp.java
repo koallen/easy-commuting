@@ -2,6 +2,8 @@ package sg.edu.ntu.cz2006.seproject;
 
 import android.app.Application;
 
+import sg.edu.ntu.cz2006.seproject.model.GoogleApiHelper;
+
 /**
  * Created by koAllen on 20/3/16.
  */

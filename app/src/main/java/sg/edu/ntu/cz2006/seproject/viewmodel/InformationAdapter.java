@@ -1,14 +1,15 @@
-package sg.edu.ntu.cz2006.seproject;
+package sg.edu.ntu.cz2006.seproject.viewmodel;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
+
+import sg.edu.ntu.cz2006.seproject.R;
 
 /**
  * Created by koAllen on 17/3/16.

@@ -1,4 +1,4 @@
-package sg.edu.ntu.cz2006.seproject;
+package sg.edu.ntu.cz2006.seproject.activity;
 
 import android.Manifest;
 import android.content.DialogInterface;
@@ -37,6 +37,12 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import sg.edu.ntu.cz2006.seproject.Globals;
+import sg.edu.ntu.cz2006.seproject.presenter.MainPresenter;
+import sg.edu.ntu.cz2006.seproject.MyApp;
+import sg.edu.ntu.cz2006.seproject.view.MainView;
+import sg.edu.ntu.cz2006.seproject.viewmodel.PlaceSuggestion;
+import sg.edu.ntu.cz2006.seproject.R;
 
 public class MainActivity extends MvpActivity<MainView, MainPresenter> implements OnMapReadyCallback, MainView {
 

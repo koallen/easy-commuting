@@ -1,8 +1,10 @@
-package sg.edu.ntu.cz2006.seproject;
+package sg.edu.ntu.cz2006.seproject.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+
+import sg.edu.ntu.cz2006.seproject.R;
 
 public class AboutActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package sg.edu.ntu.cz2006.seproject;
+package sg.edu.ntu.cz2006.seproject.model;
 
 /**
  * Created by koAllen on 17/3/16.

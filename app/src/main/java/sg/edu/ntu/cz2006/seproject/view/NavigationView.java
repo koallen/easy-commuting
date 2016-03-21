@@ -1,4 +1,4 @@
-package sg.edu.ntu.cz2006.seproject;
+package sg.edu.ntu.cz2006.seproject.view;
 
 import com.hannesdorfmann.mosby.mvp.MvpView;
 

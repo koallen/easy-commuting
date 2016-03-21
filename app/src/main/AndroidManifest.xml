@@ -18,14 +18,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".NavigationActivity">
+        <activity android:name=".activity.NavigationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -38,7 +38,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyChAN7NXfvA8JnWc2krj8xPxjeY2AzTYw8" />
 
-        <activity android:name=".AboutActivity"/>
+        <activity android:name=".activity.AboutActivity"/>
 
     </application>
 

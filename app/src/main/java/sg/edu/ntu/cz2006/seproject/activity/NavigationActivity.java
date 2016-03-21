@@ -1,4 +1,4 @@
-package sg.edu.ntu.cz2006.seproject;
+package sg.edu.ntu.cz2006.seproject.activity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -27,6 +27,13 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import sg.edu.ntu.cz2006.seproject.Globals;
+import sg.edu.ntu.cz2006.seproject.view.NavigationView;
+import sg.edu.ntu.cz2006.seproject.viewmodel.InfoData;
+import sg.edu.ntu.cz2006.seproject.viewmodel.InformationAdapter;
+import sg.edu.ntu.cz2006.seproject.MyApp;
+import sg.edu.ntu.cz2006.seproject.presenter.NavigationPresenter;
+import sg.edu.ntu.cz2006.seproject.R;
 
 public class NavigationActivity extends MvpActivity<NavigationView, NavigationPresenter> implements OnMapReadyCallback {
     @Bind(R.id.nav_rv)
