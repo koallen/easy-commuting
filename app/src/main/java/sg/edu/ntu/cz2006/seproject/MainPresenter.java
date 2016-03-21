@@ -2,46 +2,35 @@ package sg.edu.ntu.cz2006.seproject;
 
 import android.util.Log;
 
+import com.google.android.gms.common.api.Api;
 import com.hannesdorfmann.mosby.mvp.MvpBasePresenter;
 
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func4;
+import rx.schedulers.Schedulers;
 
-/**
- * Created by koAllen on 15/3/16.
- */
 public class MainPresenter extends MvpBasePresenter<MainView> {
 
-    private String data = "";
     // get singleton objects
-    private NEAServiceHelper mNeaServiceRequestor = NEAServiceHelper.getInstance();
-    private GoogleServiceHelper mGoogleServiceHelper = GoogleServiceHelper.getInstance();
+    private Observable<String> mApiFetchingTask;
+
+    private void cancelSubscription() {
+        if (mApiFetchingTask != null) {
+            mApiFetchingTask.unsubscribeOn(Schedulers.io());
+        }
+    }
 
     public void fetchUVIndexData(String origin, String destination) {
         if (isViewAttached()) {
             getView().showLoading();
         }
+        Log.d("TAG", origin);
+        Log.d("TAG", destination);
 
-        data = "";
+        mApiFetchingTask = ApiRequestHelper.getInstance().getApiData(origin, destination);
 
-        Observable.zip(
-                mNeaServiceRequestor.getUVIndex(),
-                mNeaServiceRequestor.getPSI(),
-                mNeaServiceRequestor.getWeather(),
-                mGoogleServiceHelper.getRoute(origin, destination),
-                new Func4<UVIndexResponse, PSIResponse, WeatherResponse, RouteResponse, String>() {
-                    @Override
-                    public String call(UVIndexResponse uvIndexResponse, PSIResponse psiResponse, WeatherResponse weatherResponse, RouteResponse routeResponse) {
-//                        data = "UV Index Reading: " + uvIndexResponse.getUvIndexReading();
-//                        data += "\nPSI Reading: " + psiResponse.getPsiReading();
-//                        data += "\nWeather: " + weatherResponse.getWeatherDataList();
-//                        data += "\nRoute: " + routeResponse.getRoute();
-                        data = routeResponse.getRoute().getPolyline().getPoints();
-                        return data;
-                    }
-                }
-        ).subscribe(new Subscriber<String>() {
+        mApiFetchingTask.subscribe(new Subscriber<String>() {
             @Override
             public void onCompleted() {
 
@@ -60,5 +49,13 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
                 }
             }
         });
+    }
+
+    // called when Activity is destroyed, will cancel all tasks running
+    public void detachView(boolean retainPresenterInstance){
+        super.detachView(retainPresenterInstance);
+        if (!retainPresenterInstance){
+            cancelSubscription();
+        }
     }
 }

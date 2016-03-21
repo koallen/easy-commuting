@@ -49,14 +49,12 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnItemClick;
 
 public class MainActivity extends MvpActivity<MainView, MainPresenter> implements OnMapReadyCallback, MainView {
 
     // bind views
     @Bind(R.id.floating_search_view)
     FloatingSearchView mSearchView;
-//    @Bind(R.id.)
 
     private GoogleApiClient mGoogleApiClient;
     private MaterialDialog mRequestDialog;
@@ -66,7 +64,8 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
     private MapFragment mMapFragment;
     private GoogleMap mMap;
 
-    private static final LatLng SINGAPORE = new LatLng(1.3, 103.8);
+    // some constants
+    private static final int SPEECH_REQUEST_CODE = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +117,7 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
     public void onMapReady(GoogleMap map) {
         mMap = map;
         // move the camera to Singapore at a zoom level of 10
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SINGAPORE, 10));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Globals.SINGAPORE_LOCATION, 10));
         // enable my location
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -136,18 +135,6 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
 
     @OnClick(R.id.fab)
     public void onFabClicked() {
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            // TODO: Consider calling
-//            //    ActivityCompat#requestPermissions
-//            // here to request the missing permissions, and then overriding
-//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//            //                                          int[] grantResults)
-//            // to handle the case where the user grants the permission. See the documentation
-//            // for ActivityCompat#requestPermissions for more details.
-//            return;
-//        }
-//        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-//                mGoogleApiClient);
         mLastLocation = MyApp.getGoogleApiHelper().getLastLocation();
         if (mLastLocation != null) {
             LatLng myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
@@ -175,19 +162,18 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
         mRequestDialog.show();
     }
 
-    private static final int SPEECH_REQUEST_CODE = 0;
 
     // Create an intent that can start the Speech Recognizer activity
     private void displaySpeechRecognizer() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-// Start the activity, the intent will be populated with the speech text
+        // Start the activity, the intent will be populated with the speech text
         startActivityForResult(intent, SPEECH_REQUEST_CODE);
     }
 
     // This callback is invoked when the Speech Recognizer returns.
-// This is where you process the intent and extract the speech text from the intent.
+    // This is where you process the intent and extract the speech text from the intent.
     @Override
     protected void onActivityResult(int requestCode, int resultCode,
                                     Intent data) {
@@ -219,12 +205,13 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
                     result.setResultCallback(new ResultCallback<AutocompletePredictionBuffer>() {
                         @Override
                         public void onResult(@NonNull AutocompletePredictionBuffer autocompletePredictions) {
-                            List<PlaceSuggestion> newSuggestions = new ArrayList<PlaceSuggestion>();
+                            List<PlaceSuggestion> newSuggestions = new ArrayList<>();
 
                             for (int i = 0; i < 4; ++i) {
                                 try {
                                     newSuggestions.add(new PlaceSuggestion(autocompletePredictions.get(i).getPrimaryText(null).toString()));
                                 } catch (Exception e) {
+                                    Log.d("MAINACTIVITY", e.toString());
                                 }
                             }
 

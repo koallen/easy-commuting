@@ -40,7 +40,6 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private GoogleMap mMap;
-    private static final LatLng SINGAPORE = new LatLng(1.3, 103.8);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +66,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
             apiData = extras.getString("EXTRA_UVINDEX_DATA");
         }
 
-        List<InfoData> infoDataList = new ArrayList<InfoData>();
+        List<InfoData> infoDataList = new ArrayList<>();
         infoDataList.add(new InfoData("UV Index: 0", "You can go out!"));
         infoDataList.add(new InfoData("PSI Index: 55", "Moderate level"));
         infoDataList.add(new InfoData("Weather: Sunny", "Go enjoy the sun"));
@@ -93,7 +92,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         }
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.setMyLocationEnabled(true);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SINGAPORE, 10));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Globals.SINGAPORE_LOCATION, 10));
         mMap.addPolyline(new PolylineOptions()
                 .addAll(waypoints)
                 .color(Color.BLUE));
