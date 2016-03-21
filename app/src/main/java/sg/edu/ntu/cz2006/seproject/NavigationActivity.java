@@ -5,23 +5,17 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
@@ -41,6 +35,7 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
     private String apiData;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
+    private MapFragment mMapFragment;
     private GoogleMap mMap;
 
     @Override
@@ -49,17 +44,14 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
         setContentView(R.layout.activity_navigation);
         ButterKnife.bind(this);
 
-        MapFragment mapFragment =
-                (MapFragment) getFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        // setting up Google Maps
+        setupMap();
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(NavigationActivity.this);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setHasFixedSize(true);
+        // setting up recycler view
+        setupRecyclerView();
 
         // get google api client
         mGoogleApiClient = MyApp.getGoogleApiHelper().getGoogleApiClient();
-//        mLastLocation = MyApp.getGoogleApiHelper().getLastLocation();
 
         // get api data
         Bundle extras = getIntent().getExtras();
@@ -102,18 +94,6 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
 
     @OnClick(R.id.fab)
     public void onFabClicked() {
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            // TODO: Consider calling
-//            //    ActivityCompat#requestPermissions
-//            // here to request the missing permissions, and then overriding
-//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//            //                                          int[] grantResults)
-//            // to handle the case where the user grants the permission. See the documentation
-//            // for ActivityCompat#requestPermissions for more details.
-//            return;
-//        }
-//        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-//                mGoogleApiClient);
         mLastLocation = MyApp.getGoogleApiHelper().getLastLocation();
         if (mLastLocation != null) {
             LatLng myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
@@ -141,5 +121,16 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
     @Override
     public NavigationPresenter createPresenter() {
         return new NavigationPresenter();
+    }
+
+    private void setupMap() {
+        mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        mMapFragment.getMapAsync(this);
+    }
+
+    private void setupRecyclerView() {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(NavigationActivity.this);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setHasFixedSize(true);
     }
 }
