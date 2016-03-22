@@ -32,7 +32,9 @@ public class SuggestionGenerationHelper {
         String psiSuggestion = getPSISuggestion(destinationPSI);
         // get suggestion on UV index
         String uvIndexSuggestion = getUVIndexSuggestion(dataPackage.getUVIndexResponse());
-        return Observable.just(weatherSuggestion + "\n" + psiSuggestion + "\n" + uvIndexSuggestion);
+        // get ETA
+        String etaInfo = "ETA: 20 mins";
+        return Observable.just(weatherSuggestion + "\n" + psiSuggestion + "\n" + uvIndexSuggestion + "\n" + etaInfo);
     }
 
     public WeatherData getDestinationWeather(LatLng destination, WeatherResponse weatherResponse) {

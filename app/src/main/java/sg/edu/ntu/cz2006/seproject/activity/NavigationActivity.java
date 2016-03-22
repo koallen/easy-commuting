@@ -64,9 +64,9 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
 
         // get api data
         Bundle extras = getIntent().getExtras();
-        apiData = "No UV Index data";
+        apiData = "";
         if (extras != null) {
-            apiData = extras.getString("EXTRA_UVINDEX_DATA");
+            apiData = extras.getString("EXTRA_POLYLINE");
         }
 
         List<InfoData> infoDataList = new ArrayList<>();

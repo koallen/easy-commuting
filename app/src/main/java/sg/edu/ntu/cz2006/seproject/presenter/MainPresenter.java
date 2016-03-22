@@ -106,7 +106,9 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
 
                 for (int i = 0; i < 4; ++i) {
                     try {
-                        newSuggestions.add(new PlaceSuggestion(autocompletePredictions.get(i).getPrimaryText(null).toString()));
+                        String primary = autocompletePredictions.get(i).getPrimaryText(null).toString();
+                        String full = autocompletePredictions.get(i).getFullText(null).toString();
+                        newSuggestions.add(new PlaceSuggestion(primary, full));
                     } catch (Exception e) {
                         Log.d("MainPresenter suggest", e.toString());
                     }
@@ -126,7 +128,7 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
      * @param origin starting location of a route
      * @param destination destination of a route
      */
-    public void getRouteInfo(final String origin, String destination) {
+    public void getDestinationInfo(final String origin, String destination) {
         // display a progress dialog while fetching data from api
         if (isViewAttached()) {
             getView().showLoading();
@@ -145,7 +147,7 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
             Observable<DataPackage> apiFetchingTask = geocoderTask.flatMap(new Func1<LatLng, Observable<DataPackage>>() {
                 @Override
                 public Observable<DataPackage> call(LatLng latLng) {
-                    Log.d("Observable", latLng.toString());
+                    Log.d("getRouteInfo", latLng.toString());
                     mDestination = latLng; // save the destination
                     return ApiRequestHelper.getInstance().getApiData(origin, latLng.latitude + "," + latLng.longitude);
                 }
@@ -274,6 +276,12 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
 //        }
 //    }
 
+
+    public void getRouteInfo() {
+        if (isViewAttached()) {
+            getView().showRoute(mDataPackage.getRouteResponse().getRoute().getPolyline().getPoints());
+        }
+    }
     public void connectGoogleApiClient() {
         if (!mGoogleApiClient.isConnected()) {
             mGoogleApiClient.connect();

@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -144,13 +145,16 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
 
     @Override
     public void showData(String apiData, String destination) {
-//        Intent nav = new Intent(MainActivity.this, NavigationActivity.class);
-//        nav.putExtra("EXTRA_UVINDEX_DATA", apiData);
-//        mRequestDialog.dismiss();
-//        startActivity(nav);
         mInfoDialog.setTitle(destination);
         mInfoDialog.setContent(apiData);
         mInfoDialog.show();
+    }
+
+    @Override
+    public void showRoute(String polyline) {
+        Intent nav = new Intent(MainActivity.this, NavigationActivity.class);
+        nav.putExtra("EXTRA_POLYLINE", polyline);
+        startActivity(nav);
     }
 
     @Override
@@ -261,7 +265,7 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
 //                    // for ActivityCompat#requestPermissions for more details.
 //                    return;
 //                }
-                String destination = searchSuggestion.getBody();
+                String destination = ((PlaceSuggestion) searchSuggestion).getFullAddress();
                 search(destination);
 //                presenter.getLatLong(destination);
             }
@@ -334,6 +338,12 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
                 .positiveText(R.string.agree)
                 .negativeText(R.string.disagree)
                 .cancelable(false)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        presenter.getRouteInfo();
+                    }
+                })
                 .build();
     }
 
@@ -341,6 +351,6 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
         mLastLocation = GoogleApiHelper.getInstance().getLastLocation();
         String origin = mLastLocation.getLatitude() + "," + mLastLocation.getLongitude();
         Log.d("search()", destination);
-        presenter.getRouteInfo(origin, destination);
+        presenter.getDestinationInfo(origin, destination);
     }
 }

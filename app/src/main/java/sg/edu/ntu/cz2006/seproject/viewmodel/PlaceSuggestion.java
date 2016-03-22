@@ -3,25 +3,32 @@ package sg.edu.ntu.cz2006.seproject.viewmodel;
 import android.os.Parcel;
 
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.google.android.gms.location.places.AutocompletePrediction;
 
 /**
  * Created by koAllen on 18/3/16.
  */
 public class PlaceSuggestion implements SearchSuggestion {
 
-    private String suggestion;
+    private String mPrimary;
+    private String mFull;
 
-    public PlaceSuggestion(String suggestion) {
-        this.suggestion = suggestion;
+    public PlaceSuggestion(String primary, String full) {
+        mPrimary = primary;
+        mFull = full;
     }
 
     public PlaceSuggestion(Parcel parcel) {
-        this.suggestion = parcel.readString();
+        mPrimary = parcel.readString();
     }
 
     @Override
     public String getBody() {
-        return suggestion;
+        return mPrimary;
+    }
+
+    public String getFullAddress() {
+        return mFull;
     }
 
     @Override
@@ -36,7 +43,7 @@ public class PlaceSuggestion implements SearchSuggestion {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(suggestion);
+        dest.writeString(mPrimary);
     }
 
     public static final Creator<PlaceSuggestion> CREATOR = new Creator<PlaceSuggestion>() {
