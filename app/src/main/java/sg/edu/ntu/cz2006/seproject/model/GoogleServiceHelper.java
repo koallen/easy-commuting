@@ -11,10 +11,10 @@ import rx.schedulers.Schedulers;
  * Created by koAllen on 21/3/16.
  */
 public class GoogleServiceHelper {
-    private static GoogleServiceHelper ourInstance = new GoogleServiceHelper();
+    private static GoogleServiceHelper mInstance = new GoogleServiceHelper();
 
     public static GoogleServiceHelper getInstance() {
-        return ourInstance;
+        return mInstance;
     }
 
     // class attributes
@@ -50,7 +50,7 @@ public class GoogleServiceHelper {
                 region,
                 transitMode,
                 transitPreference
-        ).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        );
     }
 
 }

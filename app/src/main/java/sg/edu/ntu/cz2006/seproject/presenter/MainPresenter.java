@@ -3,9 +3,11 @@ package sg.edu.ntu.cz2006.seproject.presenter;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -21,14 +23,20 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import sg.edu.ntu.cz2006.seproject.MyApp;
-import sg.edu.ntu.cz2006.seproject.activity.MainActivity;
 import sg.edu.ntu.cz2006.seproject.model.ApiRequestHelper;
+import sg.edu.ntu.cz2006.seproject.model.DataPackage;
+import sg.edu.ntu.cz2006.seproject.model.GeocoderHelper;
 import sg.edu.ntu.cz2006.seproject.model.GoogleApiHelper;
 import sg.edu.ntu.cz2006.seproject.view.MainView;
 import sg.edu.ntu.cz2006.seproject.viewmodel.PlaceSuggestion;
@@ -36,16 +44,15 @@ import sg.edu.ntu.cz2006.seproject.viewmodel.PlaceSuggestion;
 public class MainPresenter extends MvpBasePresenter<MainView> {
 
     // class variables
-    private Observable<String> mApiFetchingTask;
-    private Geocoder mGeocoder;
+    private Observable<String> mSuggesstionGenerationTask;
+    private DataPackage mDataPackage;
     private GoogleApiClient mGoogleApiClient;
     private LatLngBounds mLatLngBounds;
+    private LatLng mDestination;
     private AutocompleteFilter mAutoCompleteFilter;
 
     // constructor
-    public MainPresenter(Context context) {
-        // initialize geocoder
-        mGeocoder = new Geocoder(context);
+    public MainPresenter() {
         // initialize google client api
         mGoogleApiClient = new GoogleApiClient.Builder(MyApp.getContext())
                 .addConnectionCallbacks(GoogleApiHelper.getInstance())
@@ -66,11 +73,18 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
     }
 
     private void cancelSubscription() {
-        if (mApiFetchingTask != null) {
-            mApiFetchingTask.unsubscribeOn(Schedulers.io());
-        }
+//        if (mApiFetchingTask != null) {
+//            mApiFetchingTask.unsubscribeOn(Schedulers.io());
+//        }
+//        if (mGeocoderTask != null) {
+//            mGeocoderTask.unsubscribeOn(Schedulers.io());
+//        }
     }
 
+    /**
+     * Get suggestion for place from Google Places API
+     * @param query the qeury to search
+     */
     public void getSuggesstions(String query) {
         if (isViewAttached()) {
             getView().showProgress();
@@ -104,75 +118,147 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
         });
     }
 
-    public void getRouteInfo(String origin, String destination) {
+    /**
+     * fetch data from api and generate suggestions
+     * @param origin starting location of a route
+     * @param destination destination of a route
+     */
+    public void getRouteInfo(final String origin, String destination) {
+        // display a progress dialog while fetching data from api
         if (isViewAttached()) {
             getView().showLoading();
         }
-        Log.d("fetchUVIndexData", origin);
-        Log.d("fetchUVIndexData", destination);
+        // check for origin and destination
+        Log.d("getRouteInfo", origin);
+        Log.d("getRouteInfo", destination);
 
-        mApiFetchingTask = ApiRequestHelper.getInstance().getApiData(origin, destination);
-
-        mApiFetchingTask.subscribe(new Subscriber<String>() {
-            @Override
-            public void onCompleted() {
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Log.d("MAINPRESENTER", e.toString());
-                // construct error message
-                String errorMessage = "Unknown error";
-                if (e instanceof IndexOutOfBoundsException) {
-                    errorMessage = "No route found.";
-                } else if (e instanceof HttpException) {
-                    errorMessage = "Network not available.";
-                } else if (e instanceof SocketTimeoutException) {
-                    errorMessage = "Network timeout";
-                }
-                // display the message on screen
-                if (isViewAttached()) {
-                    getView().hideRequestDialog();
-                    getView().showError(errorMessage);
-                }
-            }
-
-            @Override
-            public void onNext(String o) {
-                Log.d("MAINPRESENTER", o);
-                if (isViewAttached()) {
-                    getView().showData(o);
-                }
-            }
-        });
-    }
-
-    public void getDestinationInfo(String address) {
-        if (isViewAttached()) {
-            getView().showLoading();
-        }
-        Log.d("MainPresenterGetDesInfo", address);
+        // get data from NEA, LTA and Google
         try {
-            // TODO: make network request async
-            List<Address> addresses = mGeocoder.getFromLocationName(address, 1);
-            Address addressInfo = addresses.get(0);
-            if (isViewAttached()) {
-                getView().showMarker(new LatLng(addressInfo.getLatitude(), addressInfo.getLongitude()), address, "test");
-            }
+            // get the latitude and longitude for the destination
+            Observable<LatLng> geocoderTask = GeocoderHelper.getInstance().getDestinationLatLng(destination);
+
+            // use the result to get route and other API info
+            Observable<DataPackage> apiFetchingTask = geocoderTask.flatMap(new Func1<LatLng, Observable<DataPackage>>() {
+                @Override
+                public Observable<DataPackage> call(LatLng latLng) {
+                    Log.d("Observable", latLng.toString());
+                    return ApiRequestHelper.getInstance().getApiData(origin, latLng.latitude + "," + latLng.longitude);
+                }
+            });
+
+            // generate suggestions from data received
+            mSuggesstionGenerationTask = apiFetchingTask.flatMap(new Func1<DataPackage, Observable<String>>() {
+                @Override
+                public Observable<String> call(DataPackage dataPackage) {
+                    return Observable.just(constructSuggestion(dataPackage));
+                }
+            });
+
+            // subscribe to the observable to execute the tasks
+            mSuggesstionGenerationTask.subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<String>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            // TODO: add error handling
+                            Log.d("SuggestionTask", e.toString());
+                        }
+
+                        @Override
+                        public void onNext(String s) {
+                            Log.d("Route", s);
+                            if (isViewAttached()) {
+                                getView().showData(s);
+                            }
+                        }
+                    });
         } catch (IOException e) {
-            Log.d("MAINPRESENTER", e.toString());
-            if (isViewAttached()) {
-                getView().hideRequestDialog();
-                getView().showError("Network not available.");
-            }
-        } catch (IndexOutOfBoundsException e) {
-            Log.d("MAINPRESENTER", e.toString());
-            if (isViewAttached()) {
-                getView().hideRequestDialog();
-                getView().showError("Unable to find the entered location.");
-            }
+            Log.d("Observable geocoder", e.toString());
         }
+
+////        mApiFetchingTask = ApiRequestHelper.getInstance().getApiData(origin, destination);
+//
+//        newObservable.subscribe(new Subscriber<DataPackage>() {
+//            @Override
+//            public void onCompleted() {
+//            }
+//
+//            @Override
+//            public void onError(Throwable e) {
+//                Log.d("MAINPRESENTER", e.toString());
+//                // construct error message
+//                String errorMessage = "Unknown error";
+//                if (e instanceof IndexOutOfBoundsException) {
+//                    errorMessage = "No route found.";
+//                } else if (e instanceof HttpException) {
+//                    errorMessage = "Network not available.";
+//                } else if (e instanceof SocketTimeoutException) {
+//                    errorMessage = "Network timeout";
+//                }
+//                // display the message on screen
+//                if (isViewAttached()) {
+//                    getView().hideRequestDialog();
+//                    getView().showError(errorMessage);
+//                }
+//            }
+//
+//            @Override
+//            public void onNext(DataPackage o) {
+//                Log.d("MAINPRESENTER", "DataPackage received");
+//                if (isViewAttached()) {
+//                    getView().showData(o.getRouteResponse().getRoute().getPolyline().getPoints());
+//                }
+//            }
+//        });
     }
+
+//    public void getDestinationInfo(String destination) {
+//        Log.d("MainPresenterGetDesInfo", destination);
+//        // convert address to geo coordinates
+//        try {
+//            mGeocoderTask = GeocoderHelper.getInstance().getDestinationLatLng(destination);
+//            mGeocoderTask.subscribe(new Subscriber<LatLng>() {
+//                @Override
+//                public void onCompleted() {
+//
+//                }
+//
+//                @Override
+//                public void onError(Throwable e) {
+//                    Log.d("MAINPRESENTER", e.toString());
+//                    // construct error message
+//                    String errorMessage = "Unknown error";
+//                    if (e instanceof IndexOutOfBoundsException) {
+//                        errorMessage = "No address found.";
+//                    } else if (e instanceof SocketTimeoutException) {
+//                        errorMessage = "Network timeout";
+//                    } else if (e instanceof IOException) {
+//                        errorMessage = "Network not available.";
+//                    }
+//                    // display the message on screen
+//                    if (isViewAttached()) {
+//                        getView().hideRequestDialog();
+//                        getView().showError(errorMessage);
+//                    }
+//                }
+//
+//                @Override
+//                public void onNext(LatLng latLng) {
+//                    mDestination = latLng;
+//                }
+//            });
+////            if (isViewAttached()) {
+////                getView().showMarker(mDestination.latitude, mDestination.longitude, );
+////            }
+//        } catch (IOException e) {
+//            Log.d("Geocoder", e.toString());
+//        }
+//    }
 
     public void connectGoogleApiClient() {
         if (!mGoogleApiClient.isConnected()) {
@@ -190,6 +276,15 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
         if (isViewAttached()) {
             getView().clearSuggestions();
         }
+    }
+
+    /**
+     * Generate suggestions for commuters based on API response data
+     * @param dataPackage data received from API
+     * @return constructed suggestion
+     */
+    public String constructSuggestion(DataPackage dataPackage) {
+        return dataPackage.getRouteResponse().getRoute().getPolyline().getPoints();
     }
 
     // called when Activity is destroyed, will cancel all tasks running

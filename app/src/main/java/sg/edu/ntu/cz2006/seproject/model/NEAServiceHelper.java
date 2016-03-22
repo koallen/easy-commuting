@@ -11,10 +11,10 @@ import rx.schedulers.Schedulers;
  * Created by koAllen on 21/3/16.
  */
 public class NEAServiceHelper {
-    private static NEAServiceHelper ourInstance = new NEAServiceHelper();
+    private static NEAServiceHelper mInstance = new NEAServiceHelper();
 
     public static NEAServiceHelper getInstance() {
-        return ourInstance;
+        return mInstance;
     }
 
     // class attributes
@@ -37,20 +37,14 @@ public class NEAServiceHelper {
     }
 
     public Observable<UVIndexResponse> getUVIndex() {
-        return mService.getUVIndex(uvDataSet, apiKey)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+        return mService.getUVIndex(uvDataSet, apiKey);
     }
 
     public Observable<PSIResponse> getPSI() {
-        return mService.getPSI(psiDataSet, apiKey)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+        return mService.getPSI(psiDataSet, apiKey);
     }
 
     public Observable<WeatherResponse> getWeather() {
-        return mService.getWeather(weatherDataSet, apiKey)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+        return mService.getWeather(weatherDataSet, apiKey);
     }
 }

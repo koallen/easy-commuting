@@ -98,7 +98,7 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
     @NonNull
     @Override
     public MainPresenter createPresenter() {
-        return new MainPresenter(MainActivity.this);
+        return new MainPresenter();
     }
 
     @Override
