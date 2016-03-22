@@ -44,6 +44,5 @@ dependencies {
     compile('com.mikepenz:materialdrawer:5.1.5@aar') {
         transitive = true
     }
-//    compile 'com.sothree.slidinguppanel:library:3.3.0'
     compile 'com.github.TR4Android:AndroidSlidingUpPanel:3.2.1'
 }

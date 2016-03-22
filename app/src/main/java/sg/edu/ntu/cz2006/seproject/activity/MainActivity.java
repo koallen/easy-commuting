@@ -20,6 +20,7 @@ import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.AutocompletePredictionBuffer;
 import com.google.android.gms.location.places.Places;
@@ -29,6 +30,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
 
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import sg.edu.ntu.cz2006.seproject.Globals;
+import sg.edu.ntu.cz2006.seproject.model.GoogleApiHelper;
 import sg.edu.ntu.cz2006.seproject.presenter.MainPresenter;
 import sg.edu.ntu.cz2006.seproject.MyApp;
 import sg.edu.ntu.cz2006.seproject.view.MainView;
@@ -50,11 +53,8 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
     @Bind(R.id.floating_search_view)
     FloatingSearchView mSearchView;
 
-    private GoogleApiClient mGoogleApiClient;
     private MaterialDialog mRequestDialog;
     private Location mLastLocation;
-    private LatLngBounds mLatLngBounds;
-    private AutocompleteFilter mAutoCompleteFilter;
     private MapFragment mMapFragment;
     private GoogleMap mMap;
 
@@ -75,36 +75,30 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
         // setup Google Maps
         setupMap();
 
-        // get google api client
-        mGoogleApiClient = MyApp.getGoogleApiHelper().getGoogleApiClient();
-
         // initialize the progress dialog
         setupProgressDialog();
-
-        mLatLngBounds = new LatLngBounds.Builder()
-                .include(new LatLng(1.19, 103.59))
-                .include(new LatLng(1.46, 104.03))
-                .build();
-
-        mAutoCompleteFilter = new AutocompleteFilter.Builder()
-                .setTypeFilter(AutocompleteFilter.TYPE_FILTER_NONE)
-                .build();
     }
 
+    /**
+     * connect to Google Api Client during onStart()
+     */
     protected void onStart() {
-        MyApp.getGoogleApiHelper().connect();
+        presenter.connectGoogleApiClient();
         super.onStart();
     }
 
+    /**
+     * disconnect from Google Api Client during onStop()
+     */
     protected void onStop() {
-        MyApp.getGoogleApiHelper().disconnect();
+        presenter.disconnectGoogleApiClient();
         super.onStop();
     }
 
     @NonNull
     @Override
     public MainPresenter createPresenter() {
-        return new MainPresenter();
+        return new MainPresenter(MainActivity.this);
     }
 
     @Override
@@ -124,23 +118,24 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
             return;
         }
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
         mMap.setMyLocationEnabled(true);
     }
 
     @OnClick(R.id.fab)
     public void onFabClicked() {
-        mLastLocation = MyApp.getGoogleApiHelper().getLastLocation();
+        mLastLocation = GoogleApiHelper.getInstance().getLastLocation();
         if (mLastLocation != null) {
             LatLng myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            locateUser(myLocation);
+            moveCamera(myLocation);
         } else {
             Toast.makeText(this, "Location not available", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
-    public void locateUser(LatLng userLocation) {
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
+    public void moveCamera(LatLng location) {
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
     }
 
     @Override
@@ -154,6 +149,49 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
     @Override
     public void showLoading() {
         mRequestDialog.show();
+    }
+
+    @Override
+    public void showMarker(LatLng location, String address, String snippet) {
+        // remove previous added marker
+        mMap.clear();
+        // add the new marker
+        mMap.addMarker(new MarkerOptions()
+                .position(location)
+                .title(address))
+                .setSnippet(snippet);
+        // move camera to the marker
+        moveCamera(location);
+    }
+
+    @Override
+    public void showError(String errorMessage) {
+        Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void hideRequestDialog() {
+        mRequestDialog.dismiss();
+    }
+
+    @Override
+    public void showSuggestions(List<PlaceSuggestion> suggesstions) {
+        mSearchView.swapSuggestions(suggesstions);
+    }
+
+    @Override
+    public void hideProgress() {
+        mSearchView.hideProgress();
+    }
+
+    @Override
+    public void showProgress() {
+        mSearchView.showProgress();
+    }
+
+    @Override
+    public void clearSuggestions() {
+        mSearchView.clearSuggestions();
     }
 
 
@@ -177,6 +215,9 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
             String spokenText = results.get(0);
             // Do something with spokenText
             mSearchView.setSearchText(spokenText);
+            String destination = mSearchView.getQuery();
+            search(destination);
+//            presenter.fetchUVIndexData();
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -187,35 +228,11 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
             public void onSearchTextChanged(String oldQuery, final String newQuery) {
 
                 if (!oldQuery.equals("") && newQuery.equals("")) {
-                    mSearchView.clearSuggestions();
+                    presenter.getEmptyQuery();
                 } else {
-                    mSearchView.showProgress();
-
-                    //get suggestions based on newQuery
-                    PendingResult<AutocompletePredictionBuffer> result =
-                            Places.GeoDataApi.getAutocompletePredictions(mGoogleApiClient, newQuery,
-                                    mLatLngBounds, mAutoCompleteFilter);
-
-                    result.setResultCallback(new ResultCallback<AutocompletePredictionBuffer>() {
-                        @Override
-                        public void onResult(@NonNull AutocompletePredictionBuffer autocompletePredictions) {
-                            List<PlaceSuggestion> newSuggestions = new ArrayList<>();
-
-                            for (int i = 0; i < 4; ++i) {
-                                try {
-                                    newSuggestions.add(new PlaceSuggestion(autocompletePredictions.get(i).getPrimaryText(null).toString()));
-                                } catch (Exception e) {
-                                    Log.d("MAINACTIVITY", e.toString());
-                                }
-                            }
-
-                            autocompletePredictions.release();
-                            mSearchView.swapSuggestions(newSuggestions);
-                            mSearchView.hideProgress();
-                        }
-                    });
+                    // ask presenter to get suggestions
+                    presenter.getSuggesstions(newQuery);
                 }
-
                 //pass them on to the search view
                 Log.d("MAINACTIVITY", "Suggestion changed");
             }
@@ -237,12 +254,9 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
 //                    // for ActivityCompat#requestPermissions for more details.
 //                    return;
 //                }
-//                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-//                        mGoogleApiClient);
-                mLastLocation = MyApp.getGoogleApiHelper().getLastLocation();
-                String origin = mLastLocation.getLatitude() + "," + mLastLocation.getLongitude();
                 String destination = searchSuggestion.getBody();
-                presenter.fetchUVIndexData(origin, destination);
+                search(destination);
+//                presenter.getLatLong(destination);
             }
 
             @Override
@@ -258,12 +272,9 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
 //                    // for ActivityCompat#requestPermissions for more details.
 //                    return;
 //                }
-//                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-//                        mGoogleApiClient);
-                mLastLocation = MyApp.getGoogleApiHelper().getLastLocation();
-                String origin = mLastLocation.getLatitude() + "," + mLastLocation.getLongitude();
                 String destination = mSearchView.getQuery();
-                presenter.fetchUVIndexData(origin, destination);
+                search(destination);
+//                presenter.getLatLong(destination);
             }
         });
     }
@@ -307,5 +318,12 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
                     }
                 })
                 .build();
+    }
+
+    private void search(String destination) {
+        mLastLocation = GoogleApiHelper.getInstance().getLastLocation();
+        String origin = mLastLocation.getLatitude() + "," + mLastLocation.getLongitude();
+        Log.d("search()", destination);
+        presenter.getRouteInfo(origin, destination);
     }
 }

@@ -1,6 +1,7 @@
 package sg.edu.ntu.cz2006.seproject;
 
 import android.app.Application;
+import android.content.Context;
 
 import sg.edu.ntu.cz2006.seproject.model.GoogleApiHelper;
 
@@ -9,25 +10,15 @@ import sg.edu.ntu.cz2006.seproject.model.GoogleApiHelper;
  */
 public class MyApp extends Application {
 
-    private GoogleApiHelper mGoogleApiHelper;
-    private static MyApp mInstance;
+    private static Context mContext;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-        mInstance = this;
-        mGoogleApiHelper = new GoogleApiHelper(getApplicationContext());
+        mContext = getApplicationContext();
     }
 
-    public static synchronized MyApp getInstance() {
-        return mInstance;
-    }
-
-    public GoogleApiHelper getGoogleApiHelperInstance() {
-        return this.mGoogleApiHelper;
-    }
-    public static GoogleApiHelper getGoogleApiHelper() {
-        return getInstance().getGoogleApiHelperInstance();
+    public static Context getContext() {
+        return mContext;
     }
 }

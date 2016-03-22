@@ -17,6 +17,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
@@ -28,6 +29,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import sg.edu.ntu.cz2006.seproject.Globals;
+import sg.edu.ntu.cz2006.seproject.model.GoogleApiHelper;
 import sg.edu.ntu.cz2006.seproject.view.NavigationView;
 import sg.edu.ntu.cz2006.seproject.viewmodel.InfoData;
 import sg.edu.ntu.cz2006.seproject.viewmodel.InformationAdapter;
@@ -35,7 +37,7 @@ import sg.edu.ntu.cz2006.seproject.MyApp;
 import sg.edu.ntu.cz2006.seproject.presenter.NavigationPresenter;
 import sg.edu.ntu.cz2006.seproject.R;
 
-public class NavigationActivity extends MvpActivity<NavigationView, NavigationPresenter> implements OnMapReadyCallback {
+public class NavigationActivity extends MvpActivity<NavigationView, NavigationPresenter> implements OnMapReadyCallback, NavigationView {
     @Bind(R.id.nav_rv)
     RecyclerView recyclerView;
 
@@ -58,7 +60,7 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
         setupRecyclerView();
 
         // get google api client
-        mGoogleApiClient = MyApp.getGoogleApiHelper().getGoogleApiClient();
+//        mGoogleApiClient = MyApp.getGoogleApiHelper().getGoogleApiClient();
 
         // get api data
         Bundle extras = getIntent().getExtras();
@@ -96,12 +98,12 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Globals.SINGAPORE_LOCATION, 10));
         mMap.addPolyline(new PolylineOptions()
                 .addAll(waypoints)
-                .color(Color.BLUE));
+                .color(Color.rgb(84, 178, 250)));
     }
 
     @OnClick(R.id.fab)
     public void onFabClicked() {
-        mLastLocation = MyApp.getGoogleApiHelper().getLastLocation();
+        mLastLocation = GoogleApiHelper.getInstance().getLastLocation();
         if (mLastLocation != null) {
             LatLng myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             locateUser(myLocation);
@@ -115,12 +117,15 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
     }
 
     protected void onStart() {
-        MyApp.getGoogleApiHelper().connect();
+        // connect to google api client if it's not connected
+        if (!GoogleApiHelper.getInstance().isConnected()) {
+            GoogleApiHelper.getInstance().connect();
+        }
         super.onStart();
     }
 
     protected void onStop() {
-        MyApp.getGoogleApiHelper().disconnect();
+        GoogleApiHelper.getInstance().disconnect();
         super.onStop();
     }
 
@@ -139,5 +144,27 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(NavigationActivity.this);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
+    }
+
+    @Override
+    public void showData(String apiData) {
+
+    }
+
+    public void showMarker(LatLng location, String address, String snippet) {
+        // remove previous added marker
+        mMap.clear();
+        // add the new marker
+        mMap.addMarker(new MarkerOptions()
+                .position(location)
+                .title(address))
+                .setSnippet(snippet);
+        // move camera to the marker
+        moveCamera(location);
+    }
+
+    @Override
+    public void moveCamera(LatLng location) {
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
     }
 }

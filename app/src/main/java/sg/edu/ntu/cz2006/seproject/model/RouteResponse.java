@@ -1,5 +1,7 @@
 package sg.edu.ntu.cz2006.seproject.model;
 
+import android.util.Log;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -16,6 +18,7 @@ public class RouteResponse {
     private String status;
 
     public Route getRoute() {
+        Log.d("RouteResponse", "here");
         return route.get(0);
     }
 

@@ -15,24 +15,42 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 
+import sg.edu.ntu.cz2006.seproject.MyApp;
+
 /**
- * Created by koAllen on 20/3/16.
+ * Created by koAllen on 22/3/16.
  */
 public class GoogleApiHelper implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    private static final String TAG = GoogleApiHelper.class.getSimpleName();
+    private static GoogleApiHelper mInstance = new GoogleApiHelper();
+
+    // class variables
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private Location mLastLocation;
-    private Context context;
 
-    public GoogleApiHelper(Context context) {
-        this.context = context;
+    public static GoogleApiHelper getInstance() {
+        return mInstance;
+    }
+
+    private GoogleApiHelper() {
+        // set up location request
         mLocationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        buildGoogleApiClient(context);
+        // set up google api client
+        mGoogleApiClient = new GoogleApiClient.Builder(MyApp.getContext())
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .addApi(Places.GEO_DATA_API)
+                .build();
+        // connect google api client
         connect();
     }
+
+//    private void initializeGoogleApiClient() {
+//
+//    }
 
     public GoogleApiClient getGoogleApiClient() {
         return mGoogleApiClient;
@@ -62,21 +80,11 @@ public class GoogleApiHelper implements LocationListener, GoogleApiClient.Connec
         }
     }
 
-    private void buildGoogleApiClient(Context context) {
-        mGoogleApiClient = new GoogleApiClient.Builder(context)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .addApi(Places.GEO_DATA_API)
-                .build();
-
-    }
-
     @Override
     public void onConnected(Bundle bundle) {
         //You are connected do what ever you want
         //Like i get last known location
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(MyApp.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MyApp.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -86,28 +94,29 @@ public class GoogleApiHelper implements LocationListener, GoogleApiClient.Connec
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        Log.d(TAG, "Location requested=====");
+        Log.d("HELPER", "Location requested=====");
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.d(TAG, "onConnectionSuspended: googleApiClient.connect()");
+        Log.d("HELPER", "onConnectionSuspended: googleApiClient.connect()");
         mGoogleApiClient.connect();
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.d(TAG, "onConnectionFailed: connectionResult.toString() = " + connectionResult.toString());
-    }
-
-    @Override
     public void onLocationChanged(Location location) {
+        Log.d("HELPER", "LOCATION CHANGED to " + location.toString());
         mLastLocation = location;
     }
 
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.d("HELPER", "onConnectionFailed: connectionResult.toString() = " + connectionResult.toString());
+    }
+
     private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(MyApp.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MyApp.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
