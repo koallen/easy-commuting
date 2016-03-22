@@ -29,7 +29,7 @@ public class SuggestionGenerationHelper {
         String weatherSuggestion = getWeatherSuggestion(destinationWeather);
         // get suggestion on PSI
         PSIData destinationPSI = getDestinationPSI(destination, dataPackage.getPSIResponse());
-        String psiSuggestion = getPSISuggestion(dataPackage.getPSIResponse());
+        String psiSuggestion = getPSISuggestion(destinationPSI);
         // get suggestion on UV index
         String uvIndexSuggestion = getUVIndexSuggestion(dataPackage.getUVIndexResponse());
         return Observable.just(weatherSuggestion + "\n" + psiSuggestion + "\n" + uvIndexSuggestion);
@@ -61,24 +61,132 @@ public class SuggestionGenerationHelper {
         }
 
         // return the nearest location's weather data
-        Log.d("Generator", shortestDistanceWeatherData.getPlace());
         return shortestDistanceWeatherData;
     }
 
     public PSIData getDestinationPSI(LatLng destination, PSIResponse psiResponse) {
-        Log.d("Generator", psiResponse.getPsiReading().get(0).toString());
-        return psiResponse.getPsiReading().get(0);
+        // get all PSI data
+        List<PSIData> psiDataList = psiResponse.getPsiReading();
+
+        // initialize locations
+        double startLat = destination.latitude;
+        double startLon = destination.longitude;
+        double endLat = psiDataList.get(0).getLat();
+        double endLon = psiDataList.get(0).getLon();
+        float[] shortestDistanceArray = new float[1];
+
+        // get initial distance
+        Location.distanceBetween(startLat, startLon, endLat, endLon, shortestDistanceArray);
+        float shortestDistance = shortestDistanceArray[0];
+        PSIData shortestDistancePSIData = psiDataList.get(0);
+
+        // find nearest location
+        for (PSIData psiData : psiDataList) {
+            Location.distanceBetween(startLat, startLon, psiData.getLat(), psiData.getLon(), shortestDistanceArray);
+            if (shortestDistance > shortestDistanceArray[0]) {
+                shortestDistance = shortestDistanceArray[0];
+                shortestDistancePSIData = psiData;
+            }
+        }
+
+        // return the nearest location's weather data
+        return shortestDistancePSIData;
     }
 
     public String getWeatherSuggestion(WeatherData weatherData) {
-        return "Weather is sunny today";
+        String forecast = weatherData.getForecast();
+        String weatherSuggestion = "";
+        // give suggestion based on forecast
+        if (forecast.equals("BR")) {
+            weatherSuggestion = "Mist. Be careful outside.";
+        } else if (forecast.equals("CL")) {
+            weatherSuggestion = "Cloudy. Looks like a good day.";
+        } else if (forecast.equals("DR")) {
+            weatherSuggestion = "Drizzle. Bring your umbrella.";
+        } else if (forecast.equals("FA")) {
+            weatherSuggestion = "Fair. Enjoy your trip.";
+        } else if (forecast.equals("FG")) {
+            weatherSuggestion = "Fog. Be caureful outside.";
+        } else if (forecast.equals("FN")) {
+            weatherSuggestion = "Fair. Enjoy your trip.";
+        } else if (forecast.equals("FW")) {
+            weatherSuggestion = "Fair & Warm. Enjoy the good weather.";
+        } else if (forecast.equals("HG")) {
+            weatherSuggestion = "Thundery Showers with Gusty Wind. Better stay at home.";
+        } else if (forecast.equals("HR")) {
+            weatherSuggestion = "Heavy Rain. Take your umbrella if you want to go.";
+        } else if (forecast.equals("HS")) {
+            weatherSuggestion = "Heavy Showers. Take your umbrella if you want to go.";
+        } else if (forecast.equals("HT")) {
+            weatherSuggestion = "Heavy Thundery Showers. Take your umbrella if you want to go.";
+        } else if (forecast.equals("HZ")) {
+            weatherSuggestion = "Hazy. Better stay at home.";
+        } else if (forecast.equals("LH")) {
+            weatherSuggestion = "Slightly Hazy. Wear a mask if you want to go.";
+        } else if (forecast.equals("LR")) {
+            weatherSuggestion = "Light Rain. Bring your umbrella.";
+        } else if (forecast.equals("LS")) {
+            weatherSuggestion = "Light Showers. Bring your umbrella.";
+        } else if (forecast.equals("OC")) {
+            weatherSuggestion = "Overcast. Better bring your umbrella.";
+        } else if (forecast.equals("PC")) {
+            weatherSuggestion = "Partly Cloudy. Enjoy your trip.";
+        } else if (forecast.equals("PN")) {
+            weatherSuggestion = "Partly Cloudy. Enjoy your trip.";
+        } else if (forecast.equals("PS")) {
+            weatherSuggestion = "Passing Showers. Wait for a while before you go.";
+        } else if (forecast.equals("RA")) {
+            weatherSuggestion = "Moderate Rain. Bring your umbrella.";
+        } else if (forecast.equals("SH")) {
+            weatherSuggestion = "Showers.Bring your umbrella.";
+        } else if (forecast.equals("SK")) {
+            weatherSuggestion = "Showers with Strong Wind. Bring your umbrella.";
+        } else if (forecast.equals("SN")) {
+            weatherSuggestion = "Snow. Stay warm outside.";
+        } else if (forecast.equals("SR")) {
+            weatherSuggestion = "Rain with Strong Wind. Bring your umbrella.";
+        } else if (forecast.equals("SS")) {
+            weatherSuggestion = "Snow Showers. Stay warm outside";
+        } else if (forecast.equals("SU")) {
+            weatherSuggestion = "Sunny. Enjoy the beautiful weather.";
+        } else if (forecast.equals("SW")) {
+            weatherSuggestion = "Strong Winds. Stay warm.";
+        } else if (forecast.equals("TL")) {
+            weatherSuggestion = "Thundery Showers. Remember to bring your umbrella.";
+        } else if (forecast.equals("WC")) {
+            weatherSuggestion = "Windy & Cloudy.";
+        } else if (forecast.equals("WD")) {
+            weatherSuggestion = "Windy.";
+        } else if (forecast.equals("WF")) {
+            weatherSuggestion = "Windy & Fair. Enjoy your day.";
+        } else if (forecast.equals("WR")) {
+            weatherSuggestion = "Windy & Rain. Bring your umbrella.";
+        } else if (forecast.equals("WS")) {
+            weatherSuggestion = "Windy & Showers. Take your umbrella with you.";
+        }
+        return weatherSuggestion;
     }
 
     public String getUVIndexSuggestion(UVIndexResponse uvIndexResponse) {
-        return "there is no sun today";
+        int uvIndex = uvIndexResponse.getUvIndexReading();
+        String uvIndexSuggestion = "";
+        // give suggestions
+        if (uvIndex <= 2) {
+            uvIndexSuggestion = "Low UV Index. No protection needed.";
+        } else if (uvIndex <= 5) {
+            uvIndexSuggestion = "Moderate UV Index. Put some sun lotion on and wear sunglasses.";
+        } else if (uvIndex <= 7) {
+            uvIndexSuggestion = "High UV Index. Put sun lotion on and wear sunglasses.";
+        } else if (uvIndex <= 10) {
+            uvIndexSuggestion = "Very High UV Index. Protect yourself from sunburn.";
+        } else {
+            uvIndexSuggestion = "Extreme UV Index. Protect yourself well.";
+        }
+        return uvIndexSuggestion;
     }
 
-    public String getPSISuggestion(PSIResponse psiResponse) {
-        return "psi looks good";
+    public String getPSISuggestion(PSIData psiData) {
+        // TODO: add psi suggestion
+        return psiData.toString();
     }
 }

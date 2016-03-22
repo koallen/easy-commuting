@@ -14,7 +14,7 @@ public interface MainView extends MvpView {
     // locate user
     void moveCamera(LatLng location);
     // show API data
-    void showData(String apiData);
+    void showData(String apiData, String destination);
     // show progress dialog
     void showLoading();
     // show a marker on map

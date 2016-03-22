@@ -54,6 +54,7 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
     FloatingSearchView mSearchView;
 
     private MaterialDialog mRequestDialog;
+    private MaterialDialog mInfoDialog;
     private Location mLastLocation;
     private MapFragment mMapFragment;
     private GoogleMap mMap;
@@ -77,6 +78,9 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
 
         // initialize the progress dialog
         setupProgressDialog();
+
+        // initialize the info dialog
+        setupInfoDialog();
     }
 
     /**
@@ -139,11 +143,14 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
     }
 
     @Override
-    public void showData(String apiData) {
-        Intent nav = new Intent(MainActivity.this, NavigationActivity.class);
-        nav.putExtra("EXTRA_UVINDEX_DATA", apiData);
-        mRequestDialog.dismiss();
-        startActivity(nav);
+    public void showData(String apiData, String destination) {
+//        Intent nav = new Intent(MainActivity.this, NavigationActivity.class);
+//        nav.putExtra("EXTRA_UVINDEX_DATA", apiData);
+//        mRequestDialog.dismiss();
+//        startActivity(nav);
+        mInfoDialog.setTitle(destination);
+        mInfoDialog.setContent(apiData);
+        mInfoDialog.show();
     }
 
     @Override
@@ -317,6 +324,16 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
                         Log.d("MainActivity", "onShow()");
                     }
                 })
+                .build();
+    }
+
+    private void setupInfoDialog() {
+        mInfoDialog = new MaterialDialog.Builder(this)
+                .title("")
+                .content("")
+                .positiveText(R.string.agree)
+                .negativeText(R.string.disagree)
+                .cancelable(false)
                 .build();
     }
 

@@ -48,6 +48,7 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
     // class variables
     private Observable<String> mSuggesstionGenerationTask;
     private DataPackage mDataPackage;
+    private String mDestinationString;
     private GoogleApiClient mGoogleApiClient;
     private LatLngBounds mLatLngBounds;
     private LatLng mDestination;
@@ -133,6 +134,7 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
         // check for origin and destination
         Log.d("getRouteInfo", origin);
         Log.d("getRouteInfo", destination);
+        mDestinationString = destination; // save destination string
 
         // get data from NEA, LTA and Google
         try {
@@ -160,6 +162,7 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
             mSuggesstionGenerationTask = apiFetchingTask.flatMap(new Func1<DataPackage, Observable<String>>() {
                 @Override
                 public Observable<String> call(DataPackage dataPackage) {
+                    mDataPackage = dataPackage;
                     return SuggestionGenerationHelper.getInstance().getSuggestion(mDestination, dataPackage);
                 }
             });
@@ -183,7 +186,8 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
                         public void onNext(String s) {
                             Log.d("Suggestion: ", s);
                             if (isViewAttached()) {
-                                getView().showData(s);
+                                getView().hideRequestDialog();
+                                getView().showData(s, mDestinationString);
                             }
                         }
                     });

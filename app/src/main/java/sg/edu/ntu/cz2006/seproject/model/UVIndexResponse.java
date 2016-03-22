@@ -11,9 +11,13 @@ import org.simpleframework.xml.Text;
 public class UVIndexResponse {
     @Text
     @Path("data/uv[1]")
-    private int uvIndexReading;
+    private int mUVIndexReading;
 
     public int getUvIndexReading() {
-        return uvIndexReading;
+        return mUVIndexReading;
+    }
+
+    public String toString() {
+        return "" + mUVIndexReading;
     }
 }
