@@ -7,7 +7,7 @@ import org.simpleframework.xml.Root;
 import java.util.List;
 
 /**
- * Created by koAllen on 17/3/16.
+ * A class holding response obtained from NEA Weather API
  */
 @Root(name = "channel", strict = false)
 public class WeatherResponse {

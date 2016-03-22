@@ -4,23 +4,39 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 
 /**
- * Created by koAllen on 17/3/16.
+ * A class holding weather information of a location
  */
 @Root(name = "weatherForecast")
 public class WeatherData {
     @Attribute(name = "forecast")
-    private String forecast;
+    private String mForecast;
 
     @Attribute(name = "lat")
-    private double lat;
+    private double mLat;
 
     @Attribute(name = "lon")
-    private double lon;
+    private double mLon;
 
     @Attribute(name = "name")
-    private String place;
+    private String mPlace;
 
     public String toString() {
-        return forecast + " " + lat + " " + lon + " " + place;
+        return mForecast + " " + mLat + " " + mLon + " " + mPlace;
+    }
+
+    public String getForecast() {
+        return mForecast;
+    }
+
+    public double getLat() {
+        return mLat;
+    }
+
+    public double getLon() {
+        return mLon;
+    }
+
+    public String getPlace() {
+        return mPlace;
     }
 }

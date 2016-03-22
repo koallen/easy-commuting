@@ -38,6 +38,8 @@ import sg.edu.ntu.cz2006.seproject.model.ApiRequestHelper;
 import sg.edu.ntu.cz2006.seproject.model.DataPackage;
 import sg.edu.ntu.cz2006.seproject.model.GeocoderHelper;
 import sg.edu.ntu.cz2006.seproject.model.GoogleApiHelper;
+import sg.edu.ntu.cz2006.seproject.model.SuggestionGenerationHelper;
+import sg.edu.ntu.cz2006.seproject.model.WeatherData;
 import sg.edu.ntu.cz2006.seproject.view.MainView;
 import sg.edu.ntu.cz2006.seproject.viewmodel.PlaceSuggestion;
 
@@ -142,15 +144,23 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
                 @Override
                 public Observable<DataPackage> call(LatLng latLng) {
                     Log.d("Observable", latLng.toString());
+                    mDestination = latLng; // save the destination
                     return ApiRequestHelper.getInstance().getApiData(origin, latLng.latitude + "," + latLng.longitude);
                 }
             });
 
             // generate suggestions from data received
+//            mSuggesstionGenerationTask = apiFetchingTask.flatMap(new Func1<DataPackage, Observable<String>>() {
+//                @Override
+//                public Observable<String> call(DataPackage dataPackage) {
+//                    return Observable.just(constructSuggestion(dataPackage));
+//                }
+//            });
+
             mSuggesstionGenerationTask = apiFetchingTask.flatMap(new Func1<DataPackage, Observable<String>>() {
                 @Override
                 public Observable<String> call(DataPackage dataPackage) {
-                    return Observable.just(constructSuggestion(dataPackage));
+                    return SuggestionGenerationHelper.getInstance().getSuggestion(mDestination, dataPackage);
                 }
             });
 
@@ -171,7 +181,7 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
 
                         @Override
                         public void onNext(String s) {
-                            Log.d("Route", s);
+                            Log.d("Suggestion: ", s);
                             if (isViewAttached()) {
                                 getView().showData(s);
                             }
@@ -276,15 +286,6 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
         if (isViewAttached()) {
             getView().clearSuggestions();
         }
-    }
-
-    /**
-     * Generate suggestions for commuters based on API response data
-     * @param dataPackage data received from API
-     * @return constructed suggestion
-     */
-    public String constructSuggestion(DataPackage dataPackage) {
-        return dataPackage.getRouteResponse().getRoute().getPolyline().getPoints();
     }
 
     // called when Activity is destroyed, will cancel all tasks running
