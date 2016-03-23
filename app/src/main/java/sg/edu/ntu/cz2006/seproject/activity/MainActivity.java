@@ -18,23 +18,14 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.AutocompleteFilter;
-import com.google.android.gms.location.places.AutocompletePredictionBuffer;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -43,9 +34,8 @@ import butterknife.OnClick;
 import sg.edu.ntu.cz2006.seproject.Globals;
 import sg.edu.ntu.cz2006.seproject.model.GoogleApiHelper;
 import sg.edu.ntu.cz2006.seproject.presenter.MainPresenter;
-import sg.edu.ntu.cz2006.seproject.MyApp;
 import sg.edu.ntu.cz2006.seproject.view.MainView;
-import sg.edu.ntu.cz2006.seproject.viewmodel.PlaceSuggestion;
+import sg.edu.ntu.cz2006.seproject.model.PlaceSuggestion;
 import sg.edu.ntu.cz2006.seproject.R;
 
 public class MainActivity extends MvpActivity<MainView, MainPresenter> implements OnMapReadyCallback, MainView {
@@ -205,6 +195,11 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
         mSearchView.clearSuggestions();
     }
 
+    @Override
+    public void clearSearchText() {
+        mSearchView.setSearchText("");
+    }
+
 
     // Create an intent that can start the Speech Recognizer activity
     private void displaySpeechRecognizer() {
@@ -227,6 +222,7 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
             // Do something with spokenText
             mSearchView.setSearchText(spokenText);
             String destination = mSearchView.getQuery();
+            Log.d("getRouteVoice", destination);
             search(destination);
 //            presenter.fetchUVIndexData();
         }
@@ -284,6 +280,7 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
 //                    return;
 //                }
                 String destination = mSearchView.getQuery();
+                Log.d("onSearchAction()", destination);
                 search(destination);
 //                presenter.getLatLong(destination);
             }

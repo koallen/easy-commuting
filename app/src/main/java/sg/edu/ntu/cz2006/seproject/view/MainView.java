@@ -5,7 +5,7 @@ import com.hannesdorfmann.mosby.mvp.MvpView;
 
 import java.util.List;
 
-import sg.edu.ntu.cz2006.seproject.viewmodel.PlaceSuggestion;
+import sg.edu.ntu.cz2006.seproject.model.PlaceSuggestion;
 
 /**
  * Created by koAllen on 15/3/16.
@@ -33,4 +33,6 @@ public interface MainView extends MvpView {
     void showProgress();
     // clear suggesions
     void clearSuggestions();
+    // clear search text
+    void clearSearchText();
 }

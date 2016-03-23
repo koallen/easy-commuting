@@ -5,10 +5,10 @@ import rx.functions.Func4;
 
 public class ApiRequestHelper {
 
-    private static ApiRequestHelper ourInstance = new ApiRequestHelper();
+    private static ApiRequestHelper mInstance = new ApiRequestHelper();
 
     public static ApiRequestHelper getInstance() {
-        return ourInstance;
+        return mInstance;
     }
 
     private NEAServiceHelper mNeaServiceHelper;

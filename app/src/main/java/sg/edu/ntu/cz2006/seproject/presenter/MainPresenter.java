@@ -1,13 +1,8 @@
 package sg.edu.ntu.cz2006.seproject.presenter;
 
-import android.content.Context;
-import android.location.Address;
-import android.location.Geocoder;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -20,17 +15,12 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.hannesdorfmann.mosby.mvp.MvpBasePresenter;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import retrofit2.adapter.rxjava.HttpException;
 import rx.Observable;
-import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import sg.edu.ntu.cz2006.seproject.MyApp;
@@ -39,9 +29,8 @@ import sg.edu.ntu.cz2006.seproject.model.DataPackage;
 import sg.edu.ntu.cz2006.seproject.model.GeocoderHelper;
 import sg.edu.ntu.cz2006.seproject.model.GoogleApiHelper;
 import sg.edu.ntu.cz2006.seproject.model.SuggestionGenerationHelper;
-import sg.edu.ntu.cz2006.seproject.model.WeatherData;
 import sg.edu.ntu.cz2006.seproject.view.MainView;
-import sg.edu.ntu.cz2006.seproject.viewmodel.PlaceSuggestion;
+import sg.edu.ntu.cz2006.seproject.model.PlaceSuggestion;
 
 public class MainPresenter extends MvpBasePresenter<MainView> {
 
@@ -52,7 +41,7 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
     private GoogleApiClient mGoogleApiClient;
     private LatLngBounds mLatLngBounds;
     private LatLng mDestination;
-    private AutocompleteFilter mAutoCompleteFilter;
+    private AutocompleteFilter mAutocompleteFilter;
 
     // constructor
     public MainPresenter() {
@@ -70,57 +59,100 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
                 .include(new LatLng(1.46, 104.03))
                 .build();
         // initialize autocomplete filter
-        mAutoCompleteFilter = new AutocompleteFilter.Builder()
+        mAutocompleteFilter = new AutocompleteFilter.Builder()
                 .setTypeFilter(AutocompleteFilter.TYPE_FILTER_NONE)
                 .build();
     }
 
     private void cancelSubscription() {
-//        if (mApiFetchingTask != null) {
-//            mApiFetchingTask.unsubscribeOn(Schedulers.io());
-//        }
-//        if (mGeocoderTask != null) {
-//            mGeocoderTask.unsubscribeOn(Schedulers.io());
-//        }
+        if (mSuggesstionGenerationTask != null) {
+            mSuggesstionGenerationTask.unsubscribeOn(Schedulers.io());
+        }
     }
 
     /**
      * Get suggestion for place from Google Places API
-     * @param query the qeury to search
+     * @param query the query to search
      */
     public void getSuggesstions(String query) {
         if (isViewAttached()) {
             getView().showProgress();
         }
         Log.d("MainPresenter suggest", "GETTING suggestion");
-        //get suggestions based on the query
-        PendingResult<AutocompletePredictionBuffer> result =
-                Places.GeoDataApi.getAutocompletePredictions(mGoogleApiClient, query,
-                        mLatLngBounds, mAutoCompleteFilter);
-        // set a callback to process suggestions
-        result.setResultCallback(new ResultCallback<AutocompletePredictionBuffer>() {
-            @Override
-            public void onResult(@NonNull AutocompletePredictionBuffer autocompletePredictions) {
-                Log.d("MainPresenter suggest", "RESULT RECEIVED");
-                List<PlaceSuggestion> newSuggestions = new ArrayList<>();
+        // TODO: make it cancelable
+        GeocoderHelper.getInstance().getPlaceSuggestions(query, mGoogleApiClient, mLatLngBounds, mAutocompleteFilter).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<List<PlaceSuggestion>>() {
+                    @Override
+                    public void onCompleted() {
 
-                for (int i = 0; i < 4; ++i) {
-                    try {
-                        String primary = autocompletePredictions.get(i).getPrimaryText(null).toString();
-                        String full = autocompletePredictions.get(i).getFullText(null).toString();
-                        newSuggestions.add(new PlaceSuggestion(primary, full));
-                    } catch (Exception e) {
-                        Log.d("MainPresenter suggest", e.toString());
                     }
-                }
 
-                autocompletePredictions.release();
-                if (isViewAttached()) {
-                    getView().hideProgress();
-                    getView().showSuggestions(newSuggestions);
-                }
-            }
-        });
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("MainPresenter...error", e.toString());
+                    }
+
+                    @Override
+                    public void onNext(List<PlaceSuggestion> placeSuggestions) {
+                        if (isViewAttached()) {
+                            Log.d("MainPresenter...", placeSuggestions.toString());
+//                            getView().hideProgress();
+                            getView().showSuggestions(placeSuggestions);
+                            getView().hideProgress();
+                        }
+                    }
+                });
+//        //get suggestions based on the query
+//        PendingResult<AutocompletePredictionBuffer> result =
+//                Places.GeoDataApi.getAutocompletePredictions(mGoogleApiClient, query,
+//                        mLatLngBounds, mAutocompleteFilter);
+//        // set a callback to process suggestions
+//        result.setResultCallback(new ResultCallback<AutocompletePredictionBuffer>() {
+//            @Override
+//            public void onResult(@NonNull AutocompletePredictionBuffer autocompletePredictions) {
+//                Log.d("MainPresenter suggest", "RESULT RECEIVED");
+//                mNewSuggestions = new ArrayList<>();
+//
+//                for (int i = 0; i < 4; ++i) {
+//                    try {
+//                        mPrimaryText = autocompletePredictions.get(i).getPrimaryText(null).toString();
+//                        mFullText = autocompletePredictions.get(i).getFullText(null).toString();
+//                        Observable<LatLng> geocoderTask = GeocoderHelper.getInstance().getDestinationLatLng(mFullText);
+//                        geocoderTask.subscribeOn(Schedulers.io())
+//                                .observeOn(AndroidSchedulers.mainThread())
+//                                .subscribe(new Subscriber<LatLng>() {
+//                                    @Override
+//                                    public void onCompleted() {
+//
+//                                    }
+//
+//                                    @Override
+//                                    public void onError(Throwable e) {
+//
+//                                    }
+//
+//                                    @Override
+//                                    public void onNext(LatLng latLng) {
+//                                        if (mLatLngBounds.contains(latLng)) {
+//                                            mNewSuggestions.add(new PlaceSuggestion(mPrimaryText, mFullText));
+//                                            Log.d("MainPresenter", mNewSuggestions.toString());
+//                                        }
+//                                    }
+//                                });
+//                    } catch (Exception e) {
+//                        Log.d("MainPresenter suggest", e.toString());
+//                    }
+//                }
+//
+//                autocompletePredictions.release();
+//                if (isViewAttached()) {
+//                    Log.d("MainPresenter...", mNewSuggestions.toString());
+//                    getView().showSuggestions(mNewSuggestions);
+//                    getView().hideProgress();
+//                }
+//            }
+//        });
     }
 
     /**
@@ -141,7 +173,7 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
         // get data from NEA, LTA and Google
         try {
             // get the latitude and longitude for the destination
-            Observable<LatLng> geocoderTask = GeocoderHelper.getInstance().getDestinationLatLng(destination);
+            Observable<LatLng> geocoderTask = Observable.just(GeocoderHelper.getInstance().getDestinationLatLng(destination));
 
             // use the result to get route and other API info
             Observable<DataPackage> apiFetchingTask = geocoderTask.flatMap(new Func1<LatLng, Observable<DataPackage>>() {
@@ -153,14 +185,7 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
                 }
             });
 
-            // generate suggestions from data received
-//            mSuggesstionGenerationTask = apiFetchingTask.flatMap(new Func1<DataPackage, Observable<String>>() {
-//                @Override
-//                public Observable<String> call(DataPackage dataPackage) {
-//                    return Observable.just(constructSuggestion(dataPackage));
-//                }
-//            });
-
+            // use all API response to generate suggestions
             mSuggesstionGenerationTask = apiFetchingTask.flatMap(new Func1<DataPackage, Observable<String>>() {
                 @Override
                 public Observable<String> call(DataPackage dataPackage) {
@@ -189,6 +214,7 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
                             Log.d("Suggestion: ", s);
                             if (isViewAttached()) {
                                 getView().hideRequestDialog();
+                                getView().clearSearchText();
                                 getView().showData(s, mDestinationString);
                             }
                         }

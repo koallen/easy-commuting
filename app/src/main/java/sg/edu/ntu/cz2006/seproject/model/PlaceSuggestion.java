@@ -1,9 +1,8 @@
-package sg.edu.ntu.cz2006.seproject.viewmodel;
+package sg.edu.ntu.cz2006.seproject.model;
 
 import android.os.Parcel;
 
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
-import com.google.android.gms.location.places.AutocompletePrediction;
 
 /**
  * Created by koAllen on 18/3/16.
