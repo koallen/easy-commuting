@@ -1,5 +1,6 @@
 package sg.edu.ntu.cz2006.seproject.model;
 
+import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -40,7 +41,7 @@ public class GoogleServiceHelper {
         mService = mRetrofit.create(GoogleService.class);
     }
 
-    public Observable<RouteResponse> getRoute(String origin, String destination) {
+    public Observable<ResponseBody> getRoute(String origin, String destination) {
         return mService.getRoute(
                 origin,
                 destination,

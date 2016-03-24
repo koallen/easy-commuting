@@ -12,9 +12,9 @@ public class DataPackage {
     private UVIndexResponse mUVIndexResponse;
     private PSIResponse mPSIResponse;
     private WeatherResponse mWeatherResponse;
-    private RouteResponse mRouteResponse;
+    private String mRouteResponse;
 
-    public DataPackage(UVIndexResponse uvIndexResponse, PSIResponse psiResponse, WeatherResponse weatherResponse, RouteResponse routeResponse) {
+    public DataPackage(UVIndexResponse uvIndexResponse, PSIResponse psiResponse, WeatherResponse weatherResponse, String routeResponse) {
         mUVIndexResponse = uvIndexResponse;
         mPSIResponse = psiResponse;
         mWeatherResponse = weatherResponse;
@@ -33,7 +33,7 @@ public class DataPackage {
         return mWeatherResponse;
     }
 
-    public RouteResponse getRouteResponse() {
+    public String getRouteResponse() {
         return mRouteResponse;
     }
 

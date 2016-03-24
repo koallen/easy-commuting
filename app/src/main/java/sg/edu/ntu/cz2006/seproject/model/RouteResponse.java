@@ -18,11 +18,18 @@ public class RouteResponse {
     private String status;
 
     public Route getRoute() {
-        Log.d("RouteResponse", "here");
         return route.get(0);
     }
 
     public String getStatus() {
         return status;
+    }
+
+    public String getDuration() {
+        return getRoute().getLeg().getDuration().getDurationText();
+    }
+
+    public List<Step> getSteps() {
+        return getRoute().getLeg().getSteps();
     }
 }

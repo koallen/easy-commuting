@@ -1,21 +1,16 @@
 package sg.edu.ntu.cz2006.seproject.presenter;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.AutocompleteFilter;
-import com.google.android.gms.location.places.AutocompletePredictionBuffer;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.hannesdorfmann.mosby.mvp.MvpBasePresenter;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
@@ -32,6 +27,9 @@ import sg.edu.ntu.cz2006.seproject.model.SuggestionGenerationHelper;
 import sg.edu.ntu.cz2006.seproject.view.MainView;
 import sg.edu.ntu.cz2006.seproject.model.PlaceSuggestion;
 
+/**
+ * Presenter for MainActivity
+ */
 public class MainPresenter extends MvpBasePresenter<MainView> {
 
     // class variables
@@ -97,62 +95,11 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
                     public void onNext(List<PlaceSuggestion> placeSuggestions) {
                         if (isViewAttached()) {
                             Log.d("MainPresenter...", placeSuggestions.toString());
-//                            getView().hideProgress();
                             getView().showSuggestions(placeSuggestions);
                             getView().hideProgress();
                         }
                     }
                 });
-//        //get suggestions based on the query
-//        PendingResult<AutocompletePredictionBuffer> result =
-//                Places.GeoDataApi.getAutocompletePredictions(mGoogleApiClient, query,
-//                        mLatLngBounds, mAutocompleteFilter);
-//        // set a callback to process suggestions
-//        result.setResultCallback(new ResultCallback<AutocompletePredictionBuffer>() {
-//            @Override
-//            public void onResult(@NonNull AutocompletePredictionBuffer autocompletePredictions) {
-//                Log.d("MainPresenter suggest", "RESULT RECEIVED");
-//                mNewSuggestions = new ArrayList<>();
-//
-//                for (int i = 0; i < 4; ++i) {
-//                    try {
-//                        mPrimaryText = autocompletePredictions.get(i).getPrimaryText(null).toString();
-//                        mFullText = autocompletePredictions.get(i).getFullText(null).toString();
-//                        Observable<LatLng> geocoderTask = GeocoderHelper.getInstance().getDestinationLatLng(mFullText);
-//                        geocoderTask.subscribeOn(Schedulers.io())
-//                                .observeOn(AndroidSchedulers.mainThread())
-//                                .subscribe(new Subscriber<LatLng>() {
-//                                    @Override
-//                                    public void onCompleted() {
-//
-//                                    }
-//
-//                                    @Override
-//                                    public void onError(Throwable e) {
-//
-//                                    }
-//
-//                                    @Override
-//                                    public void onNext(LatLng latLng) {
-//                                        if (mLatLngBounds.contains(latLng)) {
-//                                            mNewSuggestions.add(new PlaceSuggestion(mPrimaryText, mFullText));
-//                                            Log.d("MainPresenter", mNewSuggestions.toString());
-//                                        }
-//                                    }
-//                                });
-//                    } catch (Exception e) {
-//                        Log.d("MainPresenter suggest", e.toString());
-//                    }
-//                }
-//
-//                autocompletePredictions.release();
-//                if (isViewAttached()) {
-//                    Log.d("MainPresenter...", mNewSuggestions.toString());
-//                    getView().showSuggestions(mNewSuggestions);
-//                    getView().hideProgress();
-//                }
-//            }
-//        });
     }
 
     /**
@@ -207,6 +154,10 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
                         public void onError(Throwable e) {
                             // TODO: add error handling
                             Log.d("SuggestionTask", e.toString());
+                            if (isViewAttached()) {
+                                getView().hideRequestDialog();
+                                getView().clearSuggestions();
+                            }
                         }
 
                         @Override
@@ -259,55 +210,18 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
 //        });
     }
 
-//    public void getDestinationInfo(String destination) {
-//        Log.d("MainPresenterGetDesInfo", destination);
-//        // convert address to geo coordinates
-//        try {
-//            mGeocoderTask = GeocoderHelper.getInstance().getDestinationLatLng(destination);
-//            mGeocoderTask.subscribe(new Subscriber<LatLng>() {
-//                @Override
-//                public void onCompleted() {
-//
-//                }
-//
-//                @Override
-//                public void onError(Throwable e) {
-//                    Log.d("MAINPRESENTER", e.toString());
-//                    // construct error message
-//                    String errorMessage = "Unknown error";
-//                    if (e instanceof IndexOutOfBoundsException) {
-//                        errorMessage = "No address found.";
-//                    } else if (e instanceof SocketTimeoutException) {
-//                        errorMessage = "Network timeout";
-//                    } else if (e instanceof IOException) {
-//                        errorMessage = "Network not available.";
-//                    }
-//                    // display the message on screen
-//                    if (isViewAttached()) {
-//                        getView().hideRequestDialog();
-//                        getView().showError(errorMessage);
-//                    }
-//                }
-//
-//                @Override
-//                public void onNext(LatLng latLng) {
-//                    mDestination = latLng;
-//                }
-//            });
-////            if (isViewAttached()) {
-////                getView().showMarker(mDestination.latitude, mDestination.longitude, );
-////            }
-//        } catch (IOException e) {
-//            Log.d("Geocoder", e.toString());
-//        }
-//    }
-
-
+    /**
+     * Returns the route information to MainActivity
+     */
     public void getRouteInfo() {
         if (isViewAttached()) {
-            getView().showRoute(mDataPackage.getRouteResponse().getRoute().getPolyline().getPoints());
+            getView().showRoute(mDataPackage.getRouteResponse());
         }
     }
+
+    /**
+     * Connect to Google API client
+     */
     public void connectGoogleApiClient() {
         if (!mGoogleApiClient.isConnected()) {
             mGoogleApiClient.connect();
@@ -315,18 +229,27 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
         }
     }
 
+    /**
+     * Disconnect from Google API client
+     */
     public void disconnectGoogleApiClient() {
         mGoogleApiClient.disconnect();
         Log.d("MainPresenter", "Google Api Client disconnected");
     }
 
+    /**
+     * Clears the suggestions when the search query is an empty string
+     */
     public void getEmptyQuery() {
         if (isViewAttached()) {
             getView().clearSuggestions();
         }
     }
 
-    // called when Activity is destroyed, will cancel all tasks running
+    /**
+     * called when Activity is destroyed, will cancel all tasks running
+     * @param retainPresenterInstance whether the state of presenter should be retained
+     */
     public void detachView(boolean retainPresenterInstance){
         super.detachView(retainPresenterInstance);
         if (!retainPresenterInstance){

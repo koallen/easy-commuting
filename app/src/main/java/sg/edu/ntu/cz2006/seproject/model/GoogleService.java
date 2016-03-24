@@ -1,5 +1,6 @@
 package sg.edu.ntu.cz2006.seproject.model;
 
+import okhttp3.ResponseBody;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 import rx.Observable;
@@ -9,7 +10,7 @@ import rx.Observable;
  */
 public interface GoogleService {
     @GET("maps/api/directions/json")
-    Observable<RouteResponse> getRoute(
+    Observable<ResponseBody> getRoute(
             @Query("origin") String origin,
             @Query("destination") String destination,
             @Query("key") String apiKey,

@@ -1,5 +1,10 @@
 package sg.edu.ntu.cz2006.seproject.model;
 
+import android.util.Log;
+
+import java.io.IOException;
+
+import okhttp3.ResponseBody;
 import rx.Observable;
 import rx.functions.Func4;
 
@@ -25,10 +30,16 @@ public class ApiRequestHelper {
                 mNeaServiceHelper.getPSI(),
                 mNeaServiceHelper.getWeather(),
                 mGoogleServiceHelper.getRoute(origin, destination),
-                new Func4<UVIndexResponse, PSIResponse, WeatherResponse, RouteResponse, DataPackage>() {
+                new Func4<UVIndexResponse, PSIResponse, WeatherResponse, ResponseBody, DataPackage>() {
                     @Override
-                    public DataPackage call(UVIndexResponse uvIndexResponse, PSIResponse psiResponse, WeatherResponse weatherResponse, RouteResponse routeResponse) {
-                        DataPackage apiData = new DataPackage(uvIndexResponse, psiResponse, weatherResponse, routeResponse);
+                    public DataPackage call(UVIndexResponse uvIndexResponse, PSIResponse psiResponse, WeatherResponse weatherResponse, ResponseBody routeResponse) {
+
+                        DataPackage apiData = null;
+                        try {
+                            apiData = new DataPackage(uvIndexResponse, psiResponse, weatherResponse, routeResponse.string());
+                        } catch (IOException e) {
+                            Log.d("API", e.toString());
+                        }
                         return apiData;
                     }
                 }

@@ -33,7 +33,7 @@ public class SuggestionGenerationHelper {
         // get suggestion on UV index
         String uvIndexSuggestion = getUVIndexSuggestion(dataPackage.getUVIndexResponse());
         // get ETA
-        String etaInfo = "ETA: 20 mins";
+        String etaInfo = NavigationHelper.getInstance().getEta(dataPackage.getRouteResponse());
         return Observable.just(weatherSuggestion + "\n" + psiSuggestion + "\n" + uvIndexSuggestion + "\n" + etaInfo);
     }
 
