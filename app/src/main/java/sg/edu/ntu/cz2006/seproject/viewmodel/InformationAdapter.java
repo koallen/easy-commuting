@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -20,14 +21,14 @@ public class InformationAdapter extends RecyclerView.Adapter<InformationAdapter.
         CardView cardView;
         TextView data;
         TextView suggestion;
-//        ImageView icon;
+        ImageView icon;
 
         public InformationViewHolder(View itemView) {
             super(itemView);
             cardView = (CardView) itemView.findViewById(R.id.cv);
             data = (TextView) itemView.findViewById(R.id.data_textview);
             suggestion = (TextView) itemView.findViewById(R.id.suggestion_textview);
-//            icon = (ImageView) itemView.findViewById(R.id.icon_imageview);
+            icon = (ImageView) itemView.findViewById(R.id.icon_imageview);
         }
     }
 
@@ -48,7 +49,7 @@ public class InformationAdapter extends RecyclerView.Adapter<InformationAdapter.
     public void onBindViewHolder(InformationViewHolder holder, int position) {
         holder.data.setText(infoDataList.get(position).getData());
         holder.suggestion.setText(infoDataList.get(position).getSuggestion());
-//        holder.icon.setImageDrawable(R.drawable.ic_my_location_24dp);
+        holder.icon.setImageDrawable(infoDataList.get(position).getIcon());
     }
 
     @Override

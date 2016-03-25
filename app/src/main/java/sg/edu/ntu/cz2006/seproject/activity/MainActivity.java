@@ -141,10 +141,10 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
     }
 
     @Override
-    public void showRoute(String polyline) {
-        Intent nav = new Intent(MainActivity.this, NavigationActivity.class);
-        nav.putExtra("EXTRA_POLYLINE", polyline);
-        startActivity(nav);
+    public void showRoute(String routeResponse) {
+        Intent intent = new Intent(MainActivity.this, NavigationActivity.class);
+        intent.putExtra("EXTRA_ROUTE_RESPONSE", routeResponse);
+        startActivity(intent);
     }
 
     @Override
@@ -251,16 +251,6 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
             @Override
             public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
                 Log.d("MAINACTIVITY", "onSuggestionClicked()");
-//                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                    // TODO: Consider calling
-//                    //    ActivityCompat#requestPermissions
-//                    // here to request the missing permissions, and then overriding
-//                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//                    //                                          int[] grantResults)
-//                    // to handle the case where the user grants the permission. See the documentation
-//                    // for ActivityCompat#requestPermissions for more details.
-//                    return;
-//                }
                 String destination = ((PlaceSuggestion) searchSuggestion).getFullAddress();
                 search(destination);
 //                presenter.getLatLong(destination);
@@ -269,16 +259,6 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
             @Override
             public void onSearchAction() {
                 Log.d("MainAvtivity", "Search button presses");
-//                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                    // TODO: Consider calling
-//                    //    ActivityCompat#requestPermissions
-//                    // here to request the missing permissions, and then overriding
-//                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//                    //                                          int[] grantResults)
-//                    // to handle the case where the user grants the permission. See the documentation
-//                    // for ActivityCompat#requestPermissions for more details.
-//                    return;
-//                }
                 String destination = mSearchView.getQuery();
                 Log.d("onSearchAction()", destination);
                 search(destination);
@@ -300,7 +280,6 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
                         break;
                     case R.id.action_search:
                         displaySpeechRecognizer();
-//                        Toast.makeText(getApplicationContext(), "Voice Search not available", Toast.LENGTH_SHORT).show();
                         break;
                     default:
                         break;

@@ -9,6 +9,8 @@ import java.util.List;
  */
 public class Leg {
 
+    @SerializedName("end_location")
+    private MapLocation mMapLocation;
     @SerializedName("duration")
     private Duration mDuration;
 
@@ -17,6 +19,10 @@ public class Leg {
 
     public Duration getDuration() {
         return mDuration;
+    }
+
+    public MapLocation getMapLocation() {
+        return mMapLocation;
     }
 
     public List<Step> getSteps() {

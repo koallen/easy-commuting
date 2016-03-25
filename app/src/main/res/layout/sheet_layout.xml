@@ -15,7 +15,6 @@
         android:layout_width="match_parent"
         android:layout_height="68dp"
         android:background="#FFFFFF"
-        android:text="ETA 1H 20MIN"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Display2"
         android:textColor="@android:color/black" />

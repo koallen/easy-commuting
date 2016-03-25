@@ -18,8 +18,9 @@ public class NavigationHelper {
         mGson = new GsonBuilder().create();
     }
 
-    public String getNavigationList(String route) {
-        return "lslsls";
+    public RouteResponse getNavigationList(String route) {
+        RouteResponse routeResponse = mGson.fromJson(route, RouteResponse.class);
+        return routeResponse;
     }
 
     public String getEta(String route) {

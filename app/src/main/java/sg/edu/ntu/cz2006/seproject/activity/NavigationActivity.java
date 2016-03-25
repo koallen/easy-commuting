@@ -3,12 +3,14 @@ package sg.edu.ntu.cz2006.seproject.activity;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -26,10 +28,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
+import butterknife.BindDrawable;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import sg.edu.ntu.cz2006.seproject.Globals;
 import sg.edu.ntu.cz2006.seproject.model.GoogleApiHelper;
+import sg.edu.ntu.cz2006.seproject.model.NavigationHelper;
+import sg.edu.ntu.cz2006.seproject.model.RouteResponse;
+import sg.edu.ntu.cz2006.seproject.model.Step;
 import sg.edu.ntu.cz2006.seproject.view.NavigationView;
 import sg.edu.ntu.cz2006.seproject.viewmodel.InfoData;
 import sg.edu.ntu.cz2006.seproject.viewmodel.InformationAdapter;
@@ -40,9 +46,14 @@ import sg.edu.ntu.cz2006.seproject.R;
 public class NavigationActivity extends MvpActivity<NavigationView, NavigationPresenter> implements OnMapReadyCallback, NavigationView {
     @Bind(R.id.nav_rv)
     RecyclerView recyclerView;
+    @Bind(R.id.draggable_text)
+    TextView mTextView;
+    @BindDrawable(R.drawable.ic_directions_bus_24dp)
+    Drawable mBusIcon;
+    @BindDrawable(R.drawable.ic_directions_walk_24dp)
+    Drawable mWalkIcon;
 
-    private String apiData;
-    private GoogleApiClient mGoogleApiClient;
+    private RouteResponse mRouteResponse;
     private Location mLastLocation;
     private MapFragment mMapFragment;
     private GoogleMap mMap;
@@ -59,21 +70,29 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
         // setting up recycler view
         setupRecyclerView();
 
-        // get google api client
-//        mGoogleApiClient = MyApp.getGoogleApiHelper().getGoogleApiClient();
-
         // get api data
         Bundle extras = getIntent().getExtras();
-        apiData = "";
+        String routeResponse = "";
         if (extras != null) {
-            apiData = extras.getString("EXTRA_POLYLINE");
+            routeResponse = extras.getString("EXTRA_ROUTE_RESPONSE");
+            mRouteResponse = NavigationHelper.getInstance().getNavigationList(routeResponse);
         }
 
+        mTextView.setText(mRouteResponse.getDuration());
+
         List<InfoData> infoDataList = new ArrayList<>();
-        infoDataList.add(new InfoData("UV Index: 0", "You can go out!"));
-        infoDataList.add(new InfoData("PSI Index: 55", "Moderate level"));
-        infoDataList.add(new InfoData("Weather: Sunny", "Go enjoy the sun"));
-        infoDataList.add(new InfoData("Route: take 179", "It's gonna take a long time"));
+
+        for (Step step : mRouteResponse.getSteps()) {
+            if (step.getTravelMode().equals("TRANSIT")) {
+                infoDataList.add(new InfoData("BUS " + step.getTransit().getBusLine().getBusLineName(), step.getInstruction(), mBusIcon));
+            } else {
+                infoDataList.add(new InfoData("WALKING", step.getInstruction(), mWalkIcon));
+            }
+        }
+//        infoDataList.add(new InfoData("UV Index: 0", "You can go out!"));
+//        infoDataList.add(new InfoData("PSI Index: 55", "Moderate level"));
+//        infoDataList.add(new InfoData("Weather: Sunny", "Go enjoy the sun"));
+//        infoDataList.add(new InfoData("Route: take 179", "It's gonna take a long time"));
 
         InformationAdapter adapter = new InformationAdapter(infoDataList);
         recyclerView.setAdapter(adapter);
@@ -82,7 +101,7 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        List<LatLng> waypoints = PolyUtil.decode(apiData);
+        List<LatLng> waypoints = PolyUtil.decode(mRouteResponse.getRoute().getPolyline().getPoints());
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -99,6 +118,8 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
         mMap.addPolyline(new PolylineOptions()
                 .addAll(waypoints)
                 .color(Color.rgb(84, 178, 250)));
+        mMap.addMarker(new MarkerOptions()
+                .position(mRouteResponse.getDestination()));
     }
 
     @OnClick(R.id.fab)

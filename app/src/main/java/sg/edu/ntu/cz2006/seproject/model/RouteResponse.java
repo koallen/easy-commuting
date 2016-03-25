@@ -2,6 +2,7 @@ package sg.edu.ntu.cz2006.seproject.model;
 
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -31,5 +32,9 @@ public class RouteResponse {
 
     public List<Step> getSteps() {
         return getRoute().getLeg().getSteps();
+    }
+
+    public LatLng getDestination() {
+        return getRoute().getLeg().getMapLocation().getLatLng();
     }
 }
