@@ -90,12 +90,20 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
         super.onStop();
     }
 
+    /**
+     * Create the presenter corresponding to this activity class
+     * @return Constructed presenter
+     */
     @NonNull
     @Override
     public MainPresenter createPresenter() {
         return new MainPresenter();
     }
 
+    /**
+     * A callback function for initializing Google Maps
+     * @param map The map that is created
+     */
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
@@ -117,6 +125,10 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
         mMap.setMyLocationEnabled(true);
     }
 
+    /**
+     * A listener function for handling user input
+     * The map will move to user's current location if this button is pressed
+     */
     @OnClick(R.id.fab)
     public void onFabClicked() {
         mLastLocation = GoogleApiHelper.getInstance().getLastLocation();
@@ -128,11 +140,20 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
         }
     }
 
+    /**
+     * Moves the camera to a certain location
+     * @param location The location to be moved to
+     */
     @Override
     public void moveCamera(LatLng location) {
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
     }
 
+    /**
+     * Displays suggestion for the destination from various API
+     * @param apiData Suggestion obtained from API
+     * @param destination User's destination
+     */
     @Override
     public void showData(String apiData, String destination) {
         mInfoDialog.setTitle(destination);
@@ -140,6 +161,10 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
         mInfoDialog.show();
     }
 
+    /**
+     * Starts another activity which displays the actual route
+     * @param routeResponse Response from Google's API
+     */
     @Override
     public void showRoute(String routeResponse) {
         Intent intent = new Intent(MainActivity.this, NavigationActivity.class);
@@ -147,6 +172,9 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
         startActivity(intent);
     }
 
+    /**
+     * Display a progress dialog when loading data
+     */
     @Override
     public void showLoading() {
         mRequestDialog.show();
@@ -165,43 +193,67 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
         moveCamera(location);
     }
 
+    /**
+     * Displays a error message in the form of a toast message
+     * @param errorMessage The error message to be displayed
+     */
     @Override
     public void showError(String errorMessage) {
         Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Hide the progress dialog when data is loaded
+     */
     @Override
     public void hideRequestDialog() {
         mRequestDialog.dismiss();
     }
 
+    /**
+     * Change the suggestions in the search bar
+     * @param suggesstions New suggestion for the user
+     */
     @Override
     public void showSuggestions(List<PlaceSuggestion> suggesstions) {
         mSearchView.swapSuggestions(suggesstions);
     }
 
+    /**
+     * Hide the progress wheel of the search bar
+     */
     @Override
     public void hideProgress() {
         mSearchView.hideProgress();
     }
 
+    /**
+     * Show the progress wheel of the search bar
+     */
     @Override
     public void showProgress() {
         mSearchView.showProgress();
     }
 
+    /**
+     * Clear the search suggestions of the search bar
+     */
     @Override
     public void clearSuggestions() {
         mSearchView.clearSuggestions();
     }
 
+    /**
+     * Clear the search text of the search bar
+     */
     @Override
     public void clearSearchText() {
         mSearchView.setSearchText("");
     }
 
-
-    // Create an intent that can start the Speech Recognizer activity
+    /**
+     * Create an intent that can start the Speech Recognizer activity
+     */
     private void displaySpeechRecognizer() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -210,8 +262,13 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
         startActivityForResult(intent, SPEECH_REQUEST_CODE);
     }
 
-    // This callback is invoked when the Speech Recognizer returns.
-    // This is where you process the intent and extract the speech text from the intent.
+    /**
+     * This callback is invoked when the Speech Recognizer returns.
+     * This is where you process the intent and extract the speech text from the intent.
+     * @param requestCode The request code
+     * @param resultCode The result code
+     * @param data Speech recognized by voice search
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode,
                                     Intent data) {
@@ -224,11 +281,13 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
             String destination = mSearchView.getQuery();
             Log.d("getRouteVoice", destination);
             search(destination);
-//            presenter.fetchUVIndexData();
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    /**
+     * Set the query change listener for the search bar
+     */
     private void setSearchViewOnQueryChangeListener() {
         mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
             @Override
@@ -246,6 +305,9 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
         });
     }
 
+    /**
+     * Set the on search listener for the search bar
+     */
     private void setSearchViewOnSearchListener() {
         mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
@@ -253,7 +315,6 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
                 Log.d("MAINACTIVITY", "onSuggestionClicked()");
                 String destination = ((PlaceSuggestion) searchSuggestion).getFullAddress();
                 search(destination);
-//                presenter.getLatLong(destination);
             }
 
             @Override
@@ -262,11 +323,13 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
                 String destination = mSearchView.getQuery();
                 Log.d("onSearchAction()", destination);
                 search(destination);
-//                presenter.getLatLong(destination);
             }
         });
     }
 
+    /**
+     * Set the on menu click listener
+     */
     private void setSearchViewOnMenuItemClickListener() {
         mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
             @Override

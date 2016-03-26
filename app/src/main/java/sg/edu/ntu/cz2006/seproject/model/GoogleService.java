@@ -6,7 +6,7 @@ import retrofit2.http.Query;
 import rx.Observable;
 
 /**
- * Created by koAllen on 18/3/16.
+ * Definitions for requesting Google API
  */
 public interface GoogleService {
     @GET("maps/api/directions/json")

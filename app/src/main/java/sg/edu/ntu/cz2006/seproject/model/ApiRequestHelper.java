@@ -8,6 +8,9 @@ import okhttp3.ResponseBody;
 import rx.Observable;
 import rx.functions.Func4;
 
+/**
+ * A helper class for request API data from NEA, LTA and Google
+ */
 public class ApiRequestHelper {
 
     private static ApiRequestHelper mInstance = new ApiRequestHelper();
@@ -24,6 +27,12 @@ public class ApiRequestHelper {
         mGoogleServiceHelper = GoogleServiceHelper.getInstance();
     }
 
+    /**
+     * Returns the data obtained from various APIs
+     * @param origin User's current location
+     * @param destination User's destination
+     * @return The data from APIs
+     */
     public Observable<DataPackage> getApiData(String origin, String destination) {
         return Observable.zip(
                 mNeaServiceHelper.getUVIndex(),

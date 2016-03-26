@@ -24,18 +24,34 @@ public class WeatherData {
         return mForecast + " " + mLat + " " + mLon + " " + mPlace;
     }
 
+    /**
+     * Return the forecast
+     * @return Forecast
+     */
     public String getForecast() {
         return mForecast;
     }
 
+    /**
+     * Return the latitude
+     * @return Latitude
+     */
     public double getLat() {
         return mLat;
     }
 
+    /**
+     * Return the longitude
+     * @return Longitude
+     */
     public double getLon() {
         return mLon;
     }
 
+    /**
+     * Return the place
+     * @return Place
+     */
     public String getPlace() {
         return mPlace;
     }

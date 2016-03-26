@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 /**
- * Created by koAllen on 24/3/16.
+ * An entity class for holding Google API response
  */
 public class Leg {
 
@@ -17,14 +17,26 @@ public class Leg {
     @SerializedName("steps")
     private List<Step> mSteps;
 
+    /**
+     * Returns the duration
+     * @return Duration
+     */
     public Duration getDuration() {
         return mDuration;
     }
 
+    /**
+     * Returns location on map
+     * @return Map location
+     */
     public MapLocation getMapLocation() {
         return mMapLocation;
     }
 
+    /**
+     * Returns a list of steps
+     * @return List of steps
+     */
     public List<Step> getSteps() {
         return mSteps;
     }

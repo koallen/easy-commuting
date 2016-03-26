@@ -26,7 +26,7 @@ import rx.schedulers.Schedulers;
 import sg.edu.ntu.cz2006.seproject.MyApp;
 
 /**
- * Created by koAllen on 22/3/16.
+ * A helper class for handling geolocation related functions
  */
 public class GeocoderHelper {
     private static GeocoderHelper mInstance = new GeocoderHelper();
@@ -41,13 +41,27 @@ public class GeocoderHelper {
         mGeocoder = new Geocoder(MyApp.getContext());
     }
 
+    /**
+     * Returns the geolocation of the destination
+     * @param destination User's destination
+     * @return The geolocation
+     * @throws IOException
+     * @throws IndexOutOfBoundsException
+     */
     public LatLng getDestinationLatLng(String destination) throws IOException, IndexOutOfBoundsException {
         List<Address> addresses = mGeocoder.getFromLocationName(destination, 1);
         Address destinationInfo = addresses.get(0);
-        LatLng destinationLatLng = new LatLng(destinationInfo.getLatitude(), destinationInfo.getLongitude());
-        return destinationLatLng;
+        return new LatLng(destinationInfo.getLatitude(), destinationInfo.getLongitude());
     }
 
+    /**
+     * Returns the list of place suggestion
+     * @param query User's search query
+     * @param googleApiClient Google API client
+     * @param latLngBounds A latitude-longitude bound for Singapore
+     * @param autocompleteFilter A filter for results
+     * @return List of suggested places
+     */
     public Observable<List<PlaceSuggestion>> getPlaceSuggestions(String query, GoogleApiClient googleApiClient, final LatLngBounds latLngBounds, AutocompleteFilter autocompleteFilter) {
 
         Observable<AutocompletePredictionBuffer> buffer = getPredictionBuffer(googleApiClient, query, latLngBounds, autocompleteFilter);
@@ -82,6 +96,14 @@ public class GeocoderHelper {
         return suggestions;
     }
 
+    /**
+     * Creates an observable for getting place suggestions
+     * @param googleApiClient Google API client
+     * @param query User's query
+     * @param latLngBounds A latitude-longitude bound for Singapore
+     * @param autocompleteFilter A filter for results
+     * @return The prediction given by Google
+     */
     public Observable<AutocompletePredictionBuffer> getPredictionBuffer(final GoogleApiClient googleApiClient, final String query, final LatLngBounds latLngBounds, final AutocompleteFilter autocompleteFilter) {
         Observable<AutocompletePredictionBuffer> observable = Observable.create(new Observable.OnSubscribe() {
             @Override
@@ -96,6 +118,14 @@ public class GeocoderHelper {
         return observable;
     }
 
+    /**
+     * Gets the prediction from Google
+     * @param googleApiClient Google API client
+     * @param query User's query
+     * @param latLngBounds A latitude-longitude bound for Singapore
+     * @param autocompleteFilter A filter for results
+     * @return The prediction given by Google
+     */
     public AutocompletePredictionBuffer getBuffer(GoogleApiClient googleApiClient, String query, LatLngBounds latLngBounds, AutocompleteFilter autocompleteFilter) {
         PendingResult < AutocompletePredictionBuffer > result =
                 Places.GeoDataApi.getAutocompletePredictions(googleApiClient, query,

@@ -3,7 +3,7 @@ package sg.edu.ntu.cz2006.seproject.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by koAllen on 24/3/16.
+ * An entity class for holding Google API response
  */
 public class Step {
 
@@ -16,14 +16,26 @@ public class Step {
     @SerializedName("transit_details")
     private Transit mTransit;
 
+    /**
+     * Returns the instruction given by Google
+     * @return The instruction
+     */
     public String getInstruction() {
         return mInstruction;
     }
 
+    /**
+     * Returns the travel mode of a step
+     * @return The travel mode
+     */
     public String getTravelMode() {
         return mTravelMode;
     }
 
+    /**
+     * Returns the transit details
+     * @return Transit details
+     */
     public Transit getTransit() {
         return mTransit;
     }

@@ -21,18 +21,34 @@ public class DataPackage {
         mRouteResponse = routeResponse;
     }
 
+    /**
+     * Returns the response from NEA's UV index API
+     * @return UV index
+     */
     public UVIndexResponse getUVIndexResponse() {
         return mUVIndexResponse;
     }
 
+    /**
+     * Returns the response from NEA's PSI API
+     * @return PSI reading
+     */
     public PSIResponse getPSIResponse() {
         return mPSIResponse;
     }
 
+    /**
+     * Returns the response from NEA's weather API
+     * @return Current weather
+     */
     public WeatherResponse getWeatherResponse() {
         return mWeatherResponse;
     }
 
+    /**
+     * Returns the response from Google's Direction API
+     * @return Route information
+     */
     public String getRouteResponse() {
         return mRouteResponse;
     }

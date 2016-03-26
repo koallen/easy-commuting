@@ -13,10 +13,13 @@ import java.util.List;
 import sg.edu.ntu.cz2006.seproject.R;
 
 /**
- * Created by koAllen on 17/3/16.
+ * An adapter for recycler view
  */
 public class InformationAdapter extends RecyclerView.Adapter<InformationAdapter.InformationViewHolder> {
 
+    /**
+     * A view holder class
+     */
     public static class InformationViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
         TextView data;
@@ -38,6 +41,12 @@ public class InformationAdapter extends RecyclerView.Adapter<InformationAdapter.
         this.infoDataList= infoDataList;
     }
 
+    /**
+     * Creates the card view
+     * @param parent Parent view
+     * @param viewType View type
+     * @return An InformationViewHolder
+     */
     @Override
     public InformationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.info_card, parent, false);
@@ -45,6 +54,11 @@ public class InformationAdapter extends RecyclerView.Adapter<InformationAdapter.
         return informationViewHolder;
     }
 
+    /**
+     * Binds the data to view holder
+     * @param holder InformationViewHolder
+     * @param position Index
+     */
     @Override
     public void onBindViewHolder(InformationViewHolder holder, int position) {
         holder.data.setText(infoDataList.get(position).getData());
@@ -52,11 +66,19 @@ public class InformationAdapter extends RecyclerView.Adapter<InformationAdapter.
         holder.icon.setImageDrawable(infoDataList.get(position).getIcon());
     }
 
+    /**
+     * Return the number of items
+     * @return Number of items
+     */
     @Override
     public int getItemCount() {
         return infoDataList.size();
     }
 
+    /**
+     * Attach to a recycler view
+     * @param recyclerView The recycler view to attach to
+     */
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);

@@ -10,13 +10,15 @@ import java.util.List;
 import sg.edu.ntu.cz2006.seproject.viewmodel.InfoData;
 
 /**
- * Created by koAllen on 16/3/16.
+ * The interface between NavigationActivity and NavigationPresenter
  */
 public interface NavigationView extends MvpView {
     // show API data
     void showRouteInfo(List<InfoData> infoDataList, String eta);
+
     // show route on map
     void showRoute(List<LatLng> route, LatLng destination);
+
     // move the camera
     void moveCamera(LatLng location);
 }

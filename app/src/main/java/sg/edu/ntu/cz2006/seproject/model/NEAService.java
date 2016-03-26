@@ -5,7 +5,7 @@ import retrofit2.http.Query;
 import rx.Observable;
 
 /**
- * Created by koAllen on 16/3/16.
+ * Definitions for requesting NEA's APIs
  */
 public interface NEAService {
     @GET("api/WebAPI/")

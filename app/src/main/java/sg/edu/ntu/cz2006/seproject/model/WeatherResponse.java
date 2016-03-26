@@ -15,6 +15,10 @@ public class WeatherResponse {
     @Path("item/weatherForecast")
     private List<WeatherData> weatherDataList;
 
+    /**
+     * Return a list of weather data
+     * @return List of weather data
+     */
     public List<WeatherData> getWeatherDataList() {
         return weatherDataList;
     }

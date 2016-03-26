@@ -7,7 +7,7 @@ import retrofit2.http.Query;
 import rx.Observable;
 
 /**
- * Created by koAllen on 17/3/16.
+ * Definitions for requesting LTA API
  */
 public interface LTAService {
     @Headers({

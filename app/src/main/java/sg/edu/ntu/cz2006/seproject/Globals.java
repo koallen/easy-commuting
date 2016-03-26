@@ -2,6 +2,9 @@ package sg.edu.ntu.cz2006.seproject;
 
 import com.google.android.gms.maps.model.LatLng;
 
+/**
+ * A class for holding global variables
+ */
 public class Globals {
 
     // global variables

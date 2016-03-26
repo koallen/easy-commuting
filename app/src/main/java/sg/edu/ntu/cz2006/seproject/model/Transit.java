@@ -3,7 +3,7 @@ package sg.edu.ntu.cz2006.seproject.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by koAllen on 24/3/16.
+ * An entity class for holding Google API response
  */
 public class Transit {
 
@@ -16,14 +16,26 @@ public class Transit {
     @SerializedName("line")
     private BusLine mBusLine;
 
+    /**
+     * Returns the arrival bus stop
+     * @return Arrival bus stop
+     */
     public BusStop getArrivalStop() {
         return mArrivalStop;
     }
 
+    /**
+     * Returns the departure bus stop
+     * @return Departure bus stop
+     */
     public BusStop getDepartureStop() {
         return mArrivalStop;
     }
 
+    /**
+     * Returns the bus line
+     * @return Bus line
+     */
     public BusLine getBusLine() {
         return mBusLine;
     }

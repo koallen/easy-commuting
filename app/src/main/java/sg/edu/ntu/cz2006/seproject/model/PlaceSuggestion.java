@@ -5,7 +5,7 @@ import android.os.Parcel;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 
 /**
- * Created by koAllen on 18/3/16.
+ * A class for holding place suggestion for search
  */
 public class PlaceSuggestion implements SearchSuggestion {
 
@@ -21,11 +21,19 @@ public class PlaceSuggestion implements SearchSuggestion {
         mPrimary = parcel.readString();
     }
 
+    /**
+     * Returns the body of the suggestion
+     * @return Address's primary text
+     */
     @Override
     public String getBody() {
         return mPrimary;
     }
 
+    /**
+     * Returns the full address
+     * @return Full address
+     */
     public String getFullAddress() {
         return mFull;
     }

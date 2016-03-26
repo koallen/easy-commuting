@@ -3,13 +3,17 @@ package sg.edu.ntu.cz2006.seproject.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by koAllen on 24/3/16.
+ * An entity class for holding Google API response
  */
 public class BusLine {
 
     @SerializedName("short_name")
     private String mBusLineName;
 
+    /**
+     * Returns the bus line name
+     * @return Bus line name
+     */
     public String getBusLineName() {
         return mBusLineName;
     }

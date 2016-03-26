@@ -24,22 +24,35 @@ public class PSIData {
     @Path("record/reading[1]")
     private int mReading;
 
+    /**
+     * Returns the region id
+     * @return Region id
+     */
     public String getId() {
         return mId;
     }
+
+    /**
+     * Returns the latitude of a region
+     * @return Region latitude
+     */
     public double getLat() {
         return mLat;
     }
 
+    /**
+     * Returns the longitude of a region
+     * @return Region longitude
+     */
     public double getLon() {
         return mLon;
     }
 
+    /**
+     * Returns the reading of a region
+     * @return Region reading
+     */
     public int getReading() {
         return mReading;
-    }
-
-    public String toString() {
-        return mId + ", " + mLat + ", " + mLon + ", " + mReading;
     }
 }

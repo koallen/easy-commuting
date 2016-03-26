@@ -8,7 +8,7 @@ import org.simpleframework.xml.Root;
 import java.util.List;
 
 /**
- * Created by koAllen on 17/3/16.
+ * A class for storing API response
  */
 @Root(name = "channel", strict = false)
 public class PSIResponse {
@@ -16,6 +16,10 @@ public class PSIResponse {
     @Path("item")
     private List<PSIData> mPSIData;
 
+    /**
+     * Return a list of PSI data
+     * @return List of PSI data
+     */
     public List<PSIData> getPsiReading() {
         return mPSIData;
     }

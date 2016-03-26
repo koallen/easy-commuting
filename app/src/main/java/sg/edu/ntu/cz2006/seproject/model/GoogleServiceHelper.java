@@ -9,7 +9,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * Created by koAllen on 21/3/16.
+ * A helper class for creating requests for Google API
  */
 public class GoogleServiceHelper {
     private static GoogleServiceHelper mInstance = new GoogleServiceHelper();
@@ -41,6 +41,12 @@ public class GoogleServiceHelper {
         mService = mRetrofit.create(GoogleService.class);
     }
 
+    /**
+     * Returns the request to Google's API
+     * @param origin User's current location
+     * @param destination User's destination
+     * @return The web request
+     */
     public Observable<ResponseBody> getRoute(String origin, String destination) {
         return mService.getRoute(
                 origin,

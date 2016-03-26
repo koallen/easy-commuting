@@ -8,7 +8,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * Created by koAllen on 21/3/16.
+ * A helper class for requesting NEA's APIs
  */
 public class NEAServiceHelper {
     private static NEAServiceHelper mInstance = new NEAServiceHelper();
@@ -36,14 +36,26 @@ public class NEAServiceHelper {
         mService = mRetrofit.create(NEAService.class);
     }
 
+    /**
+     * Returns the request for UV index
+     * @return UV index request
+     */
     public Observable<UVIndexResponse> getUVIndex() {
         return mService.getUVIndex(uvDataSet, apiKey);
     }
 
+    /**
+     * Returns the request for PSI readings
+     * @return PSI readings request
+     */
     public Observable<PSIResponse> getPSI() {
         return mService.getPSI(psiDataSet, apiKey);
     }
 
+    /**
+     * Returns the request for weather data
+     * @return Weather data request
+     */
     public Observable<WeatherResponse> getWeather() {
         return mService.getWeather(weatherDataSet, apiKey);
     }

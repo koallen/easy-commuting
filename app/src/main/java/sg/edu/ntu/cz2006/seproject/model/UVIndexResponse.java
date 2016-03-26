@@ -5,7 +5,7 @@ import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Text;
 
 /**
- * Created by koAllen on 17/3/16.
+ * A class for holding the response for UV index
  */
 @Root(name = "uvindex", strict = false)
 public class UVIndexResponse {
@@ -13,11 +13,11 @@ public class UVIndexResponse {
     @Path("data/uv[1]")
     private int mUVIndexReading;
 
+    /**
+     * Returns the UV index reading
+     * @return UV index reading
+     */
     public int getUvIndexReading() {
         return mUVIndexReading;
-    }
-
-    public String toString() {
-        return "" + mUVIndexReading;
     }
 }

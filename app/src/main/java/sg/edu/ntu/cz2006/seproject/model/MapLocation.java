@@ -4,7 +4,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by koAllen on 24/3/16.
+ * An entity class for holding Google API response
  */
 public class MapLocation {
 
@@ -14,6 +14,10 @@ public class MapLocation {
     @SerializedName("lng")
     private double mLng;
 
+    /**
+     * Returns the latitude and longitude of the location
+     * @return Latitude longitude of the location
+     */
     public LatLng getLatLng() {
         return new LatLng(mLat, mLng);
     }

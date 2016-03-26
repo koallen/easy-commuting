@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
@@ -18,7 +19,7 @@ import com.google.android.gms.location.places.Places;
 import sg.edu.ntu.cz2006.seproject.MyApp;
 
 /**
- * Created by koAllen on 22/3/16.
+ * A helper class for accessing Google Services
  */
 public class GoogleApiHelper implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -47,10 +48,6 @@ public class GoogleApiHelper implements LocationListener, GoogleApiClient.Connec
         // connect google api client
         connect();
     }
-
-//    private void initializeGoogleApiClient() {
-//
-//    }
 
     public GoogleApiClient getGoogleApiClient() {
         return mGoogleApiClient;
@@ -111,7 +108,7 @@ public class GoogleApiHelper implements LocationListener, GoogleApiClient.Connec
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.d("HELPER", "onConnectionFailed: connectionResult.toString() = " + connectionResult.toString());
     }
 

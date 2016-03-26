@@ -6,7 +6,7 @@ import android.content.Context;
 import sg.edu.ntu.cz2006.seproject.model.GoogleApiHelper;
 
 /**
- * Created by koAllen on 20/3/16.
+ * A class for holding application context
  */
 public class MyApp extends Application {
 
