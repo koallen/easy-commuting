@@ -10,10 +10,10 @@ import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -21,29 +21,26 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.PolyUtil;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.BindDrawable;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import sg.edu.ntu.cz2006.seproject.Globals;
 import sg.edu.ntu.cz2006.seproject.model.GoogleApiHelper;
-import sg.edu.ntu.cz2006.seproject.model.NavigationHelper;
-import sg.edu.ntu.cz2006.seproject.model.RouteResponse;
-import sg.edu.ntu.cz2006.seproject.model.Step;
 import sg.edu.ntu.cz2006.seproject.view.NavigationView;
 import sg.edu.ntu.cz2006.seproject.viewmodel.InfoData;
 import sg.edu.ntu.cz2006.seproject.viewmodel.InformationAdapter;
-import sg.edu.ntu.cz2006.seproject.MyApp;
 import sg.edu.ntu.cz2006.seproject.presenter.NavigationPresenter;
 import sg.edu.ntu.cz2006.seproject.R;
 
+/**
+ * The activity for showing route on map and relevant route information
+ */
 public class NavigationActivity extends MvpActivity<NavigationView, NavigationPresenter> implements OnMapReadyCallback, NavigationView {
+
     @Bind(R.id.nav_rv)
     RecyclerView recyclerView;
     @Bind(R.id.draggable_text)
@@ -53,7 +50,6 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
     @BindDrawable(R.drawable.ic_directions_walk_24dp)
     Drawable mWalkIcon;
 
-    private RouteResponse mRouteResponse;
     private Location mLastLocation;
     private MapFragment mMapFragment;
     private GoogleMap mMap;
@@ -64,44 +60,29 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
         setContentView(R.layout.activity_navigation);
         ButterKnife.bind(this);
 
-        // setting up Google Maps
-        setupMap();
-
         // setting up recycler view
         setupRecyclerView();
+
+        // setting up Google Maps
+        setupMap();
 
         // get api data
         Bundle extras = getIntent().getExtras();
         String routeResponse = "";
         if (extras != null) {
+            Log.d("NavActivity", "Got intent message");
             routeResponse = extras.getString("EXTRA_ROUTE_RESPONSE");
-            mRouteResponse = NavigationHelper.getInstance().getNavigationList(routeResponse);
+            presenter.getRouteInfo(routeResponse, mBusIcon, mWalkIcon);
         }
-
-        mTextView.setText(mRouteResponse.getDuration());
-
-        List<InfoData> infoDataList = new ArrayList<>();
-
-        for (Step step : mRouteResponse.getSteps()) {
-            if (step.getTravelMode().equals("TRANSIT")) {
-                infoDataList.add(new InfoData("BUS " + step.getTransit().getBusLine().getBusLineName(), step.getInstruction(), mBusIcon));
-            } else {
-                infoDataList.add(new InfoData("WALKING", step.getInstruction(), mWalkIcon));
-            }
-        }
-//        infoDataList.add(new InfoData("UV Index: 0", "You can go out!"));
-//        infoDataList.add(new InfoData("PSI Index: 55", "Moderate level"));
-//        infoDataList.add(new InfoData("Weather: Sunny", "Go enjoy the sun"));
-//        infoDataList.add(new InfoData("Route: take 179", "It's gonna take a long time"));
-
-        InformationAdapter adapter = new InformationAdapter(infoDataList);
-        recyclerView.setAdapter(adapter);
     }
 
+    /**
+     * A callback for initializing Google Maps
+     * @param googleMap The map that is created
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        List<LatLng> waypoints = PolyUtil.decode(mRouteResponse.getRoute().getPolyline().getPoints());
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -114,14 +95,13 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
         }
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.setMyLocationEnabled(true);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Globals.SINGAPORE_LOCATION, 10));
-        mMap.addPolyline(new PolylineOptions()
-                .addAll(waypoints)
-                .color(Color.rgb(84, 178, 250)));
-        mMap.addMarker(new MarkerOptions()
-                .position(mRouteResponse.getDestination()));
+        presenter.getRoute();
     }
 
+    /**
+     * A listener function for handling FAB button clicking.
+     * The user's current location will be shown on map if the button is clicked.
+     */
     @OnClick(R.id.fab)
     public void onFabClicked() {
         mLastLocation = GoogleApiHelper.getInstance().getLastLocation();
@@ -133,23 +113,34 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
         }
     }
 
+    /**
+     * Show user's current location on map
+     * @param userLocation User's current location
+     */
     public void locateUser(LatLng userLocation) {
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
     }
 
+    /**
+     * connect to Google Api Client during onStart()
+     */
     protected void onStart() {
-        // connect to google api client if it's not connected
-        if (!GoogleApiHelper.getInstance().isConnected()) {
-            GoogleApiHelper.getInstance().connect();
-        }
+        presenter.connectGoogleApiClient();
         super.onStart();
     }
 
+    /**
+     * disconnect from Google Api Client during onStop()
+     */
     protected void onStop() {
-        GoogleApiHelper.getInstance().disconnect();
+        presenter.disconnectGoogleApiClient();
         super.onStop();
     }
 
+    /**
+     * Constructs the corresponding presenter for this activity
+     * @return The constructed presenter
+     */
     @NonNull
     @Override
     public NavigationPresenter createPresenter() {
@@ -167,25 +158,40 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
         recyclerView.setHasFixedSize(true);
     }
 
+    /**
+     * Display route information in the bottom sheet
+     * @param infoDataList A step by step navigation
+     * @param eta Estimated arrival time
+     */
     @Override
-    public void showData(String apiData) {
-
+    public void showRouteInfo(List<InfoData> infoDataList, String eta) {
+        // display ETA
+        mTextView.setText(eta);
+        // display navigation information
+        InformationAdapter adapter = new InformationAdapter(infoDataList);
+        recyclerView.setAdapter(adapter);
     }
 
-    public void showMarker(LatLng location, String address, String snippet) {
-        // remove previous added marker
-        mMap.clear();
-        // add the new marker
+    /**
+     * Display route on map
+     * @param route A list of points
+     * @param destination The location of destination
+     */
+    @Override
+    public void showRoute(List<LatLng> route, LatLng destination) {
+        mMap.addPolyline(new PolylineOptions()
+                .addAll(route)
+                .color(Color.rgb(84, 178, 250)));
         mMap.addMarker(new MarkerOptions()
-                .position(location)
-                .title(address))
-                .setSnippet(snippet);
-        // move camera to the marker
-        moveCamera(location);
+                .position(destination));
     }
 
+    /**
+     * Move the camera to a certain location
+     * @param location The location to be moved to.
+     */
     @Override
     public void moveCamera(LatLng location) {
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 10));
     }
 }

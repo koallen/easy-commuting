@@ -10,7 +10,7 @@ import java.util.List;
 import rx.Observable;
 
 /**
- * Created by koAllen on 22/3/16.
+ * A helper class for generating route suggestions
  */
 public class SuggestionGenerationHelper {
     private static SuggestionGenerationHelper mInstance = new SuggestionGenerationHelper();
@@ -23,6 +23,12 @@ public class SuggestionGenerationHelper {
 
     }
 
+    /**
+     * Provides suggestions given API information and destination
+     * @param destination User's destination
+     * @param dataPackage Data received from API
+     * @return The suggestion
+     */
     public Observable<String> getSuggestion(LatLng destination, DataPackage dataPackage) {
         // get suggestion on weather
         WeatherData destinationWeather = getDestinationWeather(destination, dataPackage.getWeatherResponse());
@@ -34,10 +40,10 @@ public class SuggestionGenerationHelper {
         String uvIndexSuggestion = getUVIndexSuggestion(dataPackage.getUVIndexResponse());
         // get ETA
         String etaInfo = NavigationHelper.getInstance().getEta(dataPackage.getRouteResponse());
-        return Observable.just(weatherSuggestion + "\n" + psiSuggestion + "\n" + uvIndexSuggestion + "\n" + etaInfo);
+        return Observable.just(weatherSuggestion + "\n\n" + psiSuggestion + "\n\n" + uvIndexSuggestion + "\n\n" + etaInfo);
     }
 
-    public WeatherData getDestinationWeather(LatLng destination, WeatherResponse weatherResponse) {
+    private WeatherData getDestinationWeather(LatLng destination, WeatherResponse weatherResponse) {
         // get all weather data
         List<WeatherData> weatherDataList = weatherResponse.getWeatherDataList();
 
@@ -66,7 +72,7 @@ public class SuggestionGenerationHelper {
         return shortestDistanceWeatherData;
     }
 
-    public PSIData getDestinationPSI(LatLng destination, PSIResponse psiResponse) {
+    private PSIData getDestinationPSI(LatLng destination, PSIResponse psiResponse) {
         // get all PSI data
         List<PSIData> psiDataList = psiResponse.getPsiReading();
 
@@ -95,7 +101,7 @@ public class SuggestionGenerationHelper {
         return shortestDistancePSIData;
     }
 
-    public String getWeatherSuggestion(WeatherData weatherData) {
+    private String getWeatherSuggestion(WeatherData weatherData) {
         String forecast = weatherData.getForecast();
         String weatherSuggestion = "";
         // give suggestion based on forecast
@@ -169,7 +175,7 @@ public class SuggestionGenerationHelper {
         return weatherSuggestion;
     }
 
-    public String getUVIndexSuggestion(UVIndexResponse uvIndexResponse) {
+    private String getUVIndexSuggestion(UVIndexResponse uvIndexResponse) {
         int uvIndex = uvIndexResponse.getUvIndexReading();
         String uvIndexSuggestion = "";
         // give suggestions
@@ -187,8 +193,21 @@ public class SuggestionGenerationHelper {
         return uvIndexSuggestion;
     }
 
-    public String getPSISuggestion(PSIData psiData) {
-        // TODO: add psi suggestion
-        return psiData.toString();
+    private String getPSISuggestion(PSIData psiData) {
+        int psiReading = psiData.getReading();
+        String psiReadingSuggestion = "";
+        // give suggestions
+        if (psiReading <= 50) {
+            psiReadingSuggestion = "Good air quality. The air is fresh.";
+        } else if (psiReading <= 100) {
+            psiReadingSuggestion = "Moderate level air quality. You don't need to worry about it.";
+        } else if (psiReading <= 200) {
+            psiReadingSuggestion = "Air is unhealthy. Maybe it's better to stay home.";
+        } else if (psiReading <= 300) {
+            psiReadingSuggestion = "Very unhealthy air. Don't go out";
+        } else {
+            psiReadingSuggestion = "Air is hazardous. Wear a mask if you have to go outside.";
+        }
+        return psiReadingSuggestion;
     }
 }
