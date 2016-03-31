@@ -49,6 +49,7 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
     private Location mLastLocation;
     private MapFragment mMapFragment;
     private GoogleMap mMap;
+    private String mQuery;
 
     // some constants
     private static final int SPEECH_REQUEST_CODE = 0;
@@ -278,9 +279,10 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
             String spokenText = results.get(0);
             // Do something with spokenText
             mSearchView.setSearchText(spokenText);
-            String destination = mSearchView.getQuery();
-            Log.d("getRouteVoice", destination);
-            search(destination);
+            mQuery = spokenText;
+//            String destination = mSearchView.getQuery();
+            Log.d("getRouteVoice", mQuery);
+            search(mQuery);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -292,6 +294,8 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
         mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
             @Override
             public void onSearchTextChanged(String oldQuery, final String newQuery) {
+
+                mQuery = newQuery;
 
                 if (!oldQuery.equals("") && newQuery.equals("")) {
                     presenter.getEmptyQuery();
@@ -320,9 +324,8 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
             @Override
             public void onSearchAction() {
                 Log.d("MainAvtivity", "Search button presses");
-                String destination = mSearchView.getQuery();
-                Log.d("onSearchAction()", destination);
-                search(destination);
+                Log.d("onSearchAction()", mQuery);
+                search(mQuery);
             }
         });
     }

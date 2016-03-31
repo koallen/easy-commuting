@@ -17,8 +17,11 @@ public interface NavigationView extends MvpView {
     void showRouteInfo(List<InfoData> infoDataList, String eta);
 
     // show route on map
-    void showRoute(List<LatLng> route, LatLng destination);
+    void showRoute(List<LatLng> route, List<LatLng> stationList);
 
     // move the camera
     void moveCamera(LatLng location);
+
+    // draw bus stations on map
+    void drawStations(List<LatLng> stationList);
 }

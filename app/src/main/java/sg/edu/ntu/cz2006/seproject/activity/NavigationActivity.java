@@ -18,6 +18,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -93,6 +94,7 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+        mMap.getUiSettings().setMapToolbarEnabled(false);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.setMyLocationEnabled(true);
         presenter.getRoute();
@@ -175,15 +177,18 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
     /**
      * Display route on map
      * @param route A list of points
-     * @param destination The location of destination
+     * @param stationList The location of stations
      */
     @Override
-    public void showRoute(List<LatLng> route, LatLng destination) {
+    public void showRoute(List<LatLng> route, List<LatLng> stationList) {
         mMap.addPolyline(new PolylineOptions()
                 .addAll(route)
                 .color(Color.rgb(84, 178, 250)));
-        mMap.addMarker(new MarkerOptions()
-                .position(destination));
+        for (LatLng station : stationList) {
+            mMap.addMarker(new MarkerOptions()
+                    .position(station)
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_image_lens)));
+        }
     }
 
     /**
@@ -193,5 +198,14 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
     @Override
     public void moveCamera(LatLng location) {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 10));
+    }
+
+    @Override
+    public void drawStations(List<LatLng> stationList) {
+        for (LatLng station : stationList) {
+            mMap.addMarker(new MarkerOptions()
+                    .position(station)
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_image_lens)));
+        }
     }
 }

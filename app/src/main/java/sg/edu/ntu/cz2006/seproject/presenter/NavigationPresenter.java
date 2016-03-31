@@ -72,10 +72,16 @@ public class NavigationPresenter extends MvpBasePresenter<NavigationView> {
     public void getRoute() {
         // construct route and marker
         List<LatLng> route = PolyUtil.decode(mRouteResponse.getRoute().getPolyline().getPoints());
+        // get all bus stops
+        List<LatLng> busStations = new ArrayList<>();
+        for (Step step : mRouteResponse.getSteps()) {
+            busStations.add(step.getEndLocation());
+        }
         // show route and destination on map
         if (isViewAttached()) {
             getView().moveCamera(Globals.SINGAPORE_LOCATION);
-            getView().showRoute(route, mRouteResponse.getDestination());
+            getView().showRoute(route, busStations);
+//            getView().drawStations(busStations);
         }
     }
 

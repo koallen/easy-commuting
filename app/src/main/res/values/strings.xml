@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SEProject</string>
+    <string name="app_name">EasyCommuting</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_navigation">NavigationActivity</string>
     <string name="search_hint">Navigate</string>

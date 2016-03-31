@@ -49,6 +49,7 @@ public class GeocoderHelper {
      * @throws IndexOutOfBoundsException
      */
     public LatLng getDestinationLatLng(String destination) throws IOException, IndexOutOfBoundsException {
+        Log.d("GetLATLNG", destination);
         List<Address> addresses = mGeocoder.getFromLocationName(destination, 1);
         Address destinationInfo = addresses.get(0);
         return new LatLng(destinationInfo.getLatitude(), destinationInfo.getLongitude());

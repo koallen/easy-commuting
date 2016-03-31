@@ -23,6 +23,7 @@ import sg.edu.ntu.cz2006.seproject.model.ApiRequestHelper;
 import sg.edu.ntu.cz2006.seproject.model.DataPackage;
 import sg.edu.ntu.cz2006.seproject.model.GeocoderHelper;
 import sg.edu.ntu.cz2006.seproject.model.GoogleApiHelper;
+import sg.edu.ntu.cz2006.seproject.model.NavigationHelper;
 import sg.edu.ntu.cz2006.seproject.model.SuggestionGenerationHelper;
 import sg.edu.ntu.cz2006.seproject.view.MainView;
 import sg.edu.ntu.cz2006.seproject.model.PlaceSuggestion;
@@ -156,6 +157,7 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
                             Log.d("SuggestionTask", e.toString());
                             if (isViewAttached()) {
                                 getView().hideRequestDialog();
+                                getView().showError(e.toString());
                                 getView().clearSuggestions();
                             }
                         }
@@ -172,6 +174,11 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
                     });
         } catch (IOException e) {
             Log.d("Observable geocoder", e.toString());
+        } catch (IndexOutOfBoundsException e) {
+            if (isViewAttached()) {
+                getView().hideRequestDialog();
+                getView().showError("Invalid Address");
+            }
         }
 
 ////        mApiFetchingTask = ApiRequestHelper.getInstance().getApiData(origin, destination);
@@ -214,8 +221,14 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
      * Returns the route information to MainActivity
      */
     public void getRouteInfo() {
-        if (isViewAttached()) {
-            getView().showRoute(mDataPackage.getRouteResponse());
+        if (NavigationHelper.getInstance().getNavigationList(mDataPackage.getRouteResponse()).getStatus().equals("OK")) {
+            if (isViewAttached()) {
+                getView().showRoute(mDataPackage.getRouteResponse());
+            }
+        } else {
+            if (isViewAttached()) {
+                getView().showError("No route available");
+            }
         }
     }
 
