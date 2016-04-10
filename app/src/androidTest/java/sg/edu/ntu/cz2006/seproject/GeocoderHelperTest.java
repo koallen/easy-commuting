@@ -25,8 +25,8 @@ import sg.edu.ntu.cz2006.seproject.model.GeocoderHelper;
  */
 @RunWith(AndroidJUnit4.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class ApplicationTest extends ApplicationTestCase<Application> {
-    public ApplicationTest() {
+public class GeocoderHelperTest extends ApplicationTestCase<Application> {
+    public GeocoderHelperTest() {
         super(Application.class);
     }
 
