@@ -187,7 +187,7 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
         for (LatLng station : stationList) {
             mMap.addMarker(new MarkerOptions()
                     .position(station)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_image_lens)));
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_bus_stop)));
         }
     }
 
@@ -198,14 +198,5 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
     @Override
     public void moveCamera(LatLng location) {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 10));
-    }
-
-    @Override
-    public void drawStations(List<LatLng> stationList) {
-        for (LatLng station : stationList) {
-            mMap.addMarker(new MarkerOptions()
-                    .position(station)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_image_lens)));
-        }
     }
 }

@@ -21,7 +21,4 @@ public interface NavigationView extends MvpView {
 
     // move the camera
     void moveCamera(LatLng location);
-
-    // draw bus stations on map
-    void drawStations(List<LatLng> stationList);
 }
