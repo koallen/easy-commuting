@@ -6,4 +6,14 @@
     <string name="please_wait">Processing your request...</string>
     <string name="agree">Go there</string>
     <string name="disagree">Dismiss</string>
+    <string name="version">1.0</string>
+    <string name="joel">Chee Jian An Joel</string>
+    <string name="siyuan">Liu Siyuan</string>
+    <string name="dennis">Benedictus Dennis Siaril</string>
+    <string name="tianwen">Tan Tian Wen</string>
+    <string name="quang">Ngo Tan Quang</string>
+    <string name="yeejing">Teng Yee Jing</string>
+    <string name="about">This Android application (a.k.a EasyCommuting) is developed in partial fulfillment of the requirements of the CZ2006 Software Engineering course project.</string>
+    <string name="disclaimer">This application is not actively maintained, use at your own risk.</string>
+    <string name="source">https://github.com/koallen/easy-commuting</string>
 </resources>
