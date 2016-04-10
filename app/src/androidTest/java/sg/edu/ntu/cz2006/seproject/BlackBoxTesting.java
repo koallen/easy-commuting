@@ -27,12 +27,12 @@ import sg.edu.ntu.cz2006.seproject.model.GoogleApiHelper;
 import sg.edu.ntu.cz2006.seproject.model.PlaceSuggestion;
 
 /**
- * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
+ * Black box testing on GeocoderHelper
  */
 @RunWith(AndroidJUnit4.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class GeocoderHelperBlackBoxTest extends ApplicationTestCase<Application> {
-    public GeocoderHelperBlackBoxTest() {
+public class BlackBoxTesting extends ApplicationTestCase<Application> {
+    public BlackBoxTesting() {
         super(Application.class);
     }
 

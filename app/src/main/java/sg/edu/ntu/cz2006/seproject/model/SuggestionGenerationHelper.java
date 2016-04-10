@@ -43,7 +43,13 @@ public class SuggestionGenerationHelper {
         return Observable.just(weatherSuggestion + "\n\n" + psiSuggestion + "\n\n" + uvIndexSuggestion + "\n\n" + etaInfo);
     }
 
-    private WeatherData getDestinationWeather(LatLng destination, WeatherResponse weatherResponse) {
+    /**
+     *
+     * @param destination
+     * @param weatherResponse
+     * @return
+     */
+    public WeatherData getDestinationWeather(LatLng destination, WeatherResponse weatherResponse) {
         // get all weather data
         List<WeatherData> weatherDataList = weatherResponse.getWeatherDataList();
 
@@ -72,7 +78,13 @@ public class SuggestionGenerationHelper {
         return shortestDistanceWeatherData;
     }
 
-    private PSIData getDestinationPSI(LatLng destination, PSIResponse psiResponse) {
+    /**
+     *
+     * @param destination
+     * @param psiResponse
+     * @return
+     */
+    public PSIData getDestinationPSI(LatLng destination, PSIResponse psiResponse) {
         // get all PSI data
         List<PSIData> psiDataList = psiResponse.getPsiReading();
 
@@ -101,7 +113,12 @@ public class SuggestionGenerationHelper {
         return shortestDistancePSIData;
     }
 
-    private String getWeatherSuggestion(WeatherData weatherData) {
+    /**
+     *
+     * @param weatherData
+     * @return
+     */
+    public String getWeatherSuggestion(WeatherData weatherData) {
         String forecast = weatherData.getForecast();
         String weatherSuggestion = "";
         // give suggestion based on forecast
@@ -175,7 +192,12 @@ public class SuggestionGenerationHelper {
         return weatherSuggestion;
     }
 
-    private String getUVIndexSuggestion(UVIndexResponse uvIndexResponse) {
+    /**
+     *
+     * @param uvIndexResponse
+     * @return
+     */
+    public String getUVIndexSuggestion(UVIndexResponse uvIndexResponse) {
         int uvIndex = uvIndexResponse.getUvIndexReading();
         String uvIndexSuggestion = "";
         // give suggestions
@@ -193,7 +215,12 @@ public class SuggestionGenerationHelper {
         return uvIndexSuggestion;
     }
 
-    private String getPSISuggestion(PSIData psiData) {
+    /**
+     *
+     * @param psiData
+     * @return
+     */
+    public String getPSISuggestion(PSIData psiData) {
         int psiReading = psiData.getReading();
         String psiReadingSuggestion = "";
         // give suggestions
