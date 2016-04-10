@@ -14,12 +14,14 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
@@ -181,14 +183,25 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
      */
     @Override
     public void showRoute(List<LatLng> route, List<LatLng> stationList) {
+        // get the bound of the route
+        LatLngBounds.Builder routeBoundBuilder = new LatLngBounds.Builder();
+        for (LatLng point : route) {
+            routeBoundBuilder.include(point);
+        }
+        LatLngBounds routeBound = routeBoundBuilder.build();
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(routeBound, 60);
+        // draw polyline
         mMap.addPolyline(new PolylineOptions()
                 .addAll(route)
                 .color(Color.rgb(84, 178, 250)));
+        // draw marker
         for (LatLng station : stationList) {
             mMap.addMarker(new MarkerOptions()
                     .position(station)
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_bus_stop)));
         }
+        // move camera to the bound (plus padding)
+        mMap.animateCamera(cameraUpdate);
     }
 
     /**
