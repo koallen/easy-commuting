@@ -26,7 +26,8 @@ import sg.edu.ntu.cz2006.seproject.model.SuggestionGenerationHelper;
 import sg.edu.ntu.cz2006.seproject.model.UVIndexResponse;
 
 /**
- * White box testing on getUVIndexSuggestion(UVIndexResponse uvIndexResponse)
+ * White box testing on getUVIndexSuggestion
+ * and getPlaceSuggestions
  */
 @RunWith(AndroidJUnit4.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

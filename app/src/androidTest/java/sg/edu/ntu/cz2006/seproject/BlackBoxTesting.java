@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ApplicationTestCase;
+import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -143,7 +144,7 @@ public class BlackBoxTesting extends ApplicationTestCase<Application> {
                 .setTypeFilter(AutocompleteFilter.TYPE_FILTER_NONE)
                 .build();
 
-        Observable<List<PlaceSuggestion>> obs = geocoderHelper.getPlaceSuggestions("some unknown place", googleApiClient, latLngBounds, autocompleteFilter);
+        Observable<List<PlaceSuggestion>> obs = geocoderHelper.getPlaceSuggestions("Jalan", googleApiClient, latLngBounds, autocompleteFilter);
         List<PlaceSuggestion> suggestions = obs.toBlocking().first();
     }
 
