@@ -11,8 +11,10 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.hannesdorfmann.mosby.mvp.MvpBasePresenter;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.List;
 
+import retrofit2.adapter.rxjava.HttpException;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -90,6 +92,9 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
                     @Override
                     public void onError(Throwable e) {
                         Log.d("MainPresenter...error", e.toString());
+                        if (isViewAttached()) {
+                            getView().hideProgress();
+                        }
                     }
 
                     @Override
@@ -153,11 +158,19 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
 
                         @Override
                         public void onError(Throwable e) {
-                            // TODO: add error handling
-                            Log.d("SuggestionTask", e.toString());
+                            // construct error message
+                            String errorMessage = "Unknown error";
+                            if (e instanceof IndexOutOfBoundsException) {
+                                errorMessage = "No route found.";
+                            } else if (e instanceof HttpException) {
+                                errorMessage = "Network not available.";
+                            } else if (e instanceof SocketTimeoutException) {
+                                errorMessage = "Network timeout";
+                            }
+                            // display the message on screen
                             if (isViewAttached()) {
                                 getView().hideRequestDialog();
-                                getView().showError(e.toString());
+                                getView().showError(errorMessage);
                                 getView().clearSuggestions();
                             }
                         }
@@ -174,6 +187,10 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
                     });
         } catch (IOException e) {
             Log.d("Observable geocoder", e.toString());
+            if (isViewAttached()) {
+                getView().hideRequestDialog();
+                getView().showError("Network unavailable");
+            }
         } catch (IndexOutOfBoundsException e) {
             if (isViewAttached()) {
                 getView().hideRequestDialog();

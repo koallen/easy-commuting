@@ -390,6 +390,7 @@ public class MainActivity extends MvpActivity<MainView, MainPresenter> implement
     }
 
     private void search(String destination) {
+        hideProgress();
         mLastLocation = GoogleApiHelper.getInstance().getLastLocation();
         String origin = mLastLocation.getLatitude() + "," + mLastLocation.getLongitude();
         Log.d("search()", destination);

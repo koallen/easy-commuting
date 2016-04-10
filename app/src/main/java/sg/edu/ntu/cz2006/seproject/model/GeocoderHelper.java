@@ -97,7 +97,7 @@ public class GeocoderHelper {
      * @param autocompleteFilter A filter for results
      * @return The prediction given by Google
      */
-    public Observable<AutocompletePredictionBuffer> getPredictionBuffer(final GoogleApiClient googleApiClient, final String query, final LatLngBounds latLngBounds, final AutocompleteFilter autocompleteFilter) {
+    private Observable<AutocompletePredictionBuffer> getPredictionBuffer(final GoogleApiClient googleApiClient, final String query, final LatLngBounds latLngBounds, final AutocompleteFilter autocompleteFilter) {
         Observable<AutocompletePredictionBuffer> observable = Observable.create(new Observable.OnSubscribe() {
             @Override
             public void call(Object o) {
@@ -119,7 +119,7 @@ public class GeocoderHelper {
      * @param autocompleteFilter A filter for results
      * @return The prediction given by Google
      */
-    public AutocompletePredictionBuffer getBuffer(GoogleApiClient googleApiClient, String query, LatLngBounds latLngBounds, AutocompleteFilter autocompleteFilter) {
+    private AutocompletePredictionBuffer getBuffer(GoogleApiClient googleApiClient, String query, LatLngBounds latLngBounds, AutocompleteFilter autocompleteFilter) {
         PendingResult < AutocompletePredictionBuffer > result =
                 Places.GeoDataApi.getAutocompletePredictions(googleApiClient, query,
                         latLngBounds, autocompleteFilter);
