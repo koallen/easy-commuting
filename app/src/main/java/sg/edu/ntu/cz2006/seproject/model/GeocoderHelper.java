@@ -73,18 +73,10 @@ public class GeocoderHelper {
                 List<PlaceSuggestion> newSuggestions = new ArrayList<>();
                 // add suggestion to list
                 for (int i = 0; i < 4; ++i) {
-                    try {
-                        String primaryText = autocompletePredictions.get(i).getPrimaryText(null).toString();
-                        String fullText = autocompletePredictions.get(i).getFullText(null).toString();
-                        // get place's coordinates from its full name
-                        LatLng placeLatLng = getDestinationLatLng(fullText);
-                        // if the place is within Singapore, add it to suggestion list
-                        if (latLngBounds.contains(placeLatLng)) {
-                            newSuggestions.add(new PlaceSuggestion(primaryText, fullText));
-//                    Log.d("MainPresenter", newSuggestions.toString());
-                        }
-                    } catch (Exception e) {
-                        Log.d("GeocoderHelper", e.toString());
+                    String primaryText = autocompletePredictions.get(i).getPrimaryText(null).toString();
+                    String fullText = autocompletePredictions.get(i).getFullText(null).toString();
+                    if (fullText.contains("Singapore")) {
+                        newSuggestions.add(new PlaceSuggestion(primaryText, fullText));
                     }
                 }
                 // release the buffer
