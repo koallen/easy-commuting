@@ -170,7 +170,7 @@ public class NavigationActivity extends MvpActivity<NavigationView, NavigationPr
     @Override
     public void showRouteInfo(List<InfoData> infoDataList, String eta) {
         // display ETA
-        mTextView.setText(eta);
+        mTextView.setText("ETA: " + eta);
         // display navigation information
         InformationAdapter adapter = new InformationAdapter(infoDataList);
         recyclerView.setAdapter(adapter);
