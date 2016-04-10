@@ -158,6 +158,7 @@ public class MainPresenter extends MvpBasePresenter<MainView> {
 
                         @Override
                         public void onError(Throwable e) {
+                            Log.d("taskOnError", e.toString());
                             // construct error message
                             String errorMessage = "Unknown error";
                             if (e instanceof IndexOutOfBoundsException) {

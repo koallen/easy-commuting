@@ -13,6 +13,8 @@ public class UVIndexResponse {
     @Path("data/uv[1]")
     private int mUVIndexReading;
 
+    public UVIndexResponse() {}
+
     public UVIndexResponse(int uvIndexReading) {
         mUVIndexReading = uvIndexReading;
     }
